@@ -144,3 +144,40 @@ Returns `int64` — each number is stored as a 64-bit integer.
 
 > **Important:** If even a single element in the array is a float, NumPy will automatically convert **all** values to `float64`.
 
+---
+
+## 7. Matrix Multiplication — Concept First
+
+When you have a 2D array (matrix) and a 1D array (vector), multiplying them together is called **matrix-vector multiplication**.
+
+Given a matrix **M** of shape `(n, k)` and a vector **v** of shape `(k,)`, the result is a vector of shape `(n,)` where each element is the **dot product of a row of M with v**.
+
+Visually for our case (`5×3` matrix × `3,` vector → `5,` vector):
+
+```
+Region 1: (50×0.1) + (90×0.5) + (50×0.3) = 5  + 45 + 15 = 65
+Region 2: (42×0.1) + (65×0.5) + (70×0.3) = 4.2 + 32.5 + 21 = 57.7
+... and so on for each region
+```
+
+Each value in the output is the **weighted yield for that region**.
+
+### 7.1 Using `np.matmul()`
+
+```python
+print(np.matmul(climate_data, weights))
+```
+
+### 7.2 Using the `@` Operator
+
+Python's `@` operator is shorthand for matrix multiplication and is the modern, preferred way to write it:
+
+```python
+print(climate_data @ weights)
+```
+
+Both produce identical results — a 1D array of 5 values, one crop yield per region.
+
+---
+
+
