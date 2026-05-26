@@ -461,3 +461,42 @@ print(total_common)
 This returns `4` — the four positions in the first row where both arrays agree.
  
 ---
+
+## 17. Array Indexing and Slicing
+ 
+NumPy extends Python's indexing to multi-dimensional arrays. Instead of chaining brackets like `array[1][1][0]`, NumPy lets you write all indices in a single bracket separated by commas: `array[1, 1, 0]`. This is cleaner and also faster.
+ 
+### Understanding the Shape of a 3D Array
+ 
+```python
+array7 = np.array([
+    [[ 1,  2,  3,  4], [ 4,  3,  2,  1]],
+    [[11, 21, 31, 41], [42, 33, 24, 14]],
+    [[16, 26, 36, 46], [47, 37, 27, 17]]
+])
+ 
+print(array7.shape)  # (3, 2, 4)
+```
+ 
+`shape = (3, 2, 4)` means:
+ 
+```
+Axis 0  →  3 blocks   (the outermost layer — which block?)
+Axis 1  →  2 rows     (inside each block — which row?)
+Axis 2  →  4 elements (inside each row — which element?)
+```
+ 
+Visualised:
+ 
+```
+Block 0:   [ 1,  2,  3,  4]   ← row 0
+           [ 4,  3,  2,  1]   ← row 1
+ 
+Block 1:   [11, 21, 31, 41]   ← row 0
+           [42, 33, 24, 14]   ← row 1
+ 
+Block 2:   [16, 26, 36, 46]   ← row 0
+           [47, 37, 27, 17]   ← row 1
+```
+ 
+---
