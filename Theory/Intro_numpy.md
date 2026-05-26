@@ -99,3 +99,48 @@ print((Kamra * weights).sum())
 All three approaches — `crop_yield()`, `np.dot()`, and `(array * array).sum()` — produce the **exact same result**. NumPy just makes it cleaner and faster.
 
 ---
+
+## 5. Benefits of NumPy Arrays
+
+1. **Ease of use** — Most mathematical operations (dot product, sum, mean, etc.) are built-in methods. No need to write manual loops.
+
+2. **Performance** — NumPy is implemented in **C** (not Python), so array operations run significantly faster, especially on large datasets. This matters when working with thousands or millions of data points.
+
+---
+
+## 6. 2D NumPy Arrays — Multiple Regions
+
+When you have data for more than one region, a **2D array** (a matrix) is the right structure. NumPy supports any number of dimensions — 1D, 2D, 3D, or more (n-dimensional).
+
+```python
+climate_data = np.array([
+    [50, 90, 50],
+    [42, 65, 70],
+    [80, 30, 99],
+    [ 5, 25, 50],
+    [70, 50, 30]
+])
+```
+
+Each **row** is a region; each **column** is a feature (humidity, rainfall, temperature).
+
+### Shape
+
+```python
+print(climate_data.shape)
+```
+
+Returns `(5, 3)` — 5 rows (regions) and 3 columns (features).
+
+### Data Type
+
+All elements in a NumPy array must share the **same data type**. This is required for performance — uniform types allow the data to be stored in a compact, contiguous block of memory.
+
+```python
+print(climate_data.dtype)
+```
+
+Returns `int64` — each number is stored as a 64-bit integer.
+
+> **Important:** If even a single element in the array is a float, NumPy will automatically convert **all** values to `float64`.
+
