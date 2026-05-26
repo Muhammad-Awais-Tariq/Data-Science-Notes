@@ -202,3 +202,68 @@ The three parameters do the following:
 Once loaded, `climate_data_csv` is a normal NumPy 2D array and you can use it exactly like the manually defined one from before. If the file has 100 rows and 3 columns, its shape will be `(100, 3)`.
  
 ---
+
+## 9. Computing Yield from Loaded Data
+ 
+With the data loaded, we can apply the same matrix multiplication to get the crop yield for every region in one step:
+ 
+```python
+crop_yield_results = climate_data_csv @ weights
+```
+ 
+This produces a 1D array of shape `(100,)` — one yield value per row (region) in the CSV.
+
+---
+
+## 10. `reshape()` — Concept First
+ 
+Before we can attach the yield results back to the climate data, we need to understand `reshape()`.
+ 
+`reshape()` changes the **shape** of an array without changing its data or the number of elements.
+ 
+After the matrix multiplication, `crop_yield_results` has shape `(100,)` — a flat 1D array of 100 numbers. But `climate_data_csv` has shape `(100, 3)` — a 2D array. You **cannot concatenate** a 1D array alongside a 2D array column-wise; the dimensions don't align.
+ 
+The fix is to reshape the 1D array into a 2D column vector:
+ 
+```
+(100,)   →   (100, 1)
+```
+ 
+Visually:
+ 
+```
+Before reshape:  [65.0, 57.7, 88.1, ...]         shape: (100,)
+ 
+After reshape:   [[65.0],
+                  [57.7],
+                  [88.1],
+                  ...]                            shape: (100, 1)
+```
+ 
+Now it has 100 rows and 1 column — which lines up perfectly with the 100 rows of the climate data.
+ 
+```python
+crop_yield_results.reshape(-1, 1)
+```
+ 
+> **Tip:** Using `-1` instead of a hardcoded `100` is better practice. NumPy automatically infers that dimension from the array's size, so the code still works even if the number of rows changes.
+ 
+---
+
+## 11. Concatenating Arrays — Attaching the Yield Column
+ 
+`np.concatenate()` joins two or more arrays together. The `axis` parameter controls the direction:
+ 
+- `axis=0` — stack **vertically** (add more rows)
+- `axis=1` — stack **horizontally** (add more columns) ✓ this is what we want
+```python
+climate_results = np.concatenate(
+    (climate_data_csv, crop_yield_results.reshape(-1, 1)),
+    axis=1
+)
+print(climate_results)
+```
+ 
+The result is a new array of shape `(100, 4)` — the original 3 feature columns plus the computed yield as a 4th column.
+ 
+---
