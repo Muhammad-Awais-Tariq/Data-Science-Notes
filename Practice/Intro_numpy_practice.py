@@ -25,3 +25,24 @@ climate_data = np.array([
 ])
 
 print(np.matmul(climate_data, weights))
+
+climate_data_csv = np.genfromtxt("climate_data.txt", delimiter=",", skip_header=1)
+print(climate_data_csv)
+print(climate_data_csv.shape)
+
+crop_yield_results = climate_data_csv @ weights
+
+
+climate_results = np.concatenate(
+    (climate_data_csv , crop_yield_results.reshape(-1, 1)),
+    axis=1
+)
+print(climate_results)
+
+np.savetxt(
+    "climate_data.txt",
+    climate_results,
+    fmt="%.2f",
+    header="Temperature_C,Humidity_%,Rainfall_mm,Crop_Yield",
+    comments=""
+)
