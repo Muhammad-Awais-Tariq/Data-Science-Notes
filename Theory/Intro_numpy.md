@@ -604,3 +604,251 @@ array7[0, :, :]   # block 0, all rows, all elements → shape (2, 4)
 ### Visualization
 ![Indexing Visualization](Indexing_Visualization.jpg)
 ---
+
+ 
+## 18. Special Array Creation Functions
+ 
+So far we have been creating arrays by passing in data manually with `np.array()`. NumPy also provides several built-in functions for generating arrays with a specific pattern or size — useful for initialising data, setting up experiments, or building test matrices without typing every value by hand.
+ 
+---
+ 
+### 18.1 `np.zeros()` — Array of All Zeros
+ 
+Creates an array of the given shape where every element is `0.0`.
+ 
+```python
+array8 = np.zeros((3, 2))
+print(array8)
+```
+ 
+Output:
+```
+[[0. 0.]
+ [0. 0.]
+ [0. 0.]]
+```
+ 
+Shape `(3, 2)` gives 3 rows and 2 columns. The default dtype is `float64`, which is why the values display as `0.` rather than `0`.
+ 
+**When to use:** Initialising an output array before filling it in a loop, or creating a blank "template" matrix of a known size.
+ 
+---
+
+### 18.2 `np.ones()` — Array of All Ones
+ 
+Identical in behaviour to `np.zeros()`, but fills with `1.0` instead.
+ 
+```python
+array9 = np.ones((3, 2))
+print(array9)
+```
+ 
+Output:
+```
+[[1. 1.]
+ [1. 1.]
+ [1. 1.]]
+```
+ 
+**When to use:** Creating a default weight vector (every factor equally weighted), or as a starting point before scaling values.
+ 
+---
+ 
+### 18.3 `np.eye()` — Identity Matrix
+ 
+Creates a **square** matrix where the diagonal is `1` and everything else is `0`. The single argument is the size of both dimensions.
+ 
+```python
+print(np.eye(3))
+```
+ 
+Output:
+```
+[[1. 0. 0.]
+ [0. 1. 0.]
+ [0. 0. 1.]]
+```
+ 
+This is the matrix equivalent of the number `1` — multiplying any matrix by the identity matrix leaves it unchanged. The concept comes directly from linear algebra.
+ 
+**When to use:** Linear algebra operations, setting up transformation matrices, or as a neutral starting point before adding off-diagonal values.
+ 
+---
+ 
+### 18.4 `np.random.rand()` — Uniform Random Values
+ 
+Generates random values sampled from a **uniform distribution** between `0.0` (inclusive) and `1.0` (exclusive). Every value in that range has an equal chance of being picked.
+ 
+You pass the **shape as separate arguments** (not as a tuple):
+ 
+```python
+print(np.random.rand(5))       # 1D array of 5 values
+print(np.random.rand(2, 3))    # 2D array, shape (2, 3)
+```
+ 
+Example output for `np.random.rand(5)`:
+```
+[0.37454012 0.95071431 0.73199394 0.59865848 0.15601864]
+```
+ 
+Example output for `np.random.rand(2, 3)`:
+```
+[[0.15601864 0.15599452 0.05808361]
+ [0.86617615 0.70807258 0.02058449]]
+```
+ 
+Every value is between 0 and 1. The distribution is flat — no value is more likely than another.
+ 
+**When to use:** Randomly initialising model weights, generating synthetic data for testing, or any situation where you need values spread evenly between 0 and 1.
+ 
+---
+ 
+### 18.5 `np.random.randn()` — Standard Normal Random Values
+ 
+Generates random values sampled from a **standard normal distribution** (also called a Gaussian distribution) — centred at `0` with a standard deviation of `1`.
+ 
+```python
+print(np.random.randn(5))      # 1D array of 5 values
+print(np.random.randn(2, 3))   # 2D array, shape (2, 3)
+```
+ 
+Example output for `np.random.randn(5)`:
+```
+[ 0.49671415 -0.1382643   0.64768854  1.52302986  1.02272212]
+```
+ 
+Example output for `np.random.randn(2, 3)`:
+```
+[[ 0.22957721 -1.03693648  0.24196227]
+ [-1.91328024 -1.72491783 -0.56228753]]
+```
+ 
+Values cluster around `0`. Most values fall between `-3` and `3`, with values further from `0` becoming increasingly rare.
+ 
+**When to use:** Initialising neural network weights (where values close to zero are preferred), simulating real-world noise, or any situation where a bell-curve distribution better models the data than a flat one.
+ 
+---
+ 
+### `rand` vs `randn` — Key Difference
+ 
+| | `np.random.rand()` | `np.random.randn()` |
+|---|---|---|
+| Distribution | Uniform | Normal (Gaussian) |
+| Range | Strictly `[0, 1)` | Unbounded (mostly `-3` to `3`) |
+| Centre | `0.5` | `0` |
+| Shape of argument | Separate ints: `rand(2, 3)` | Separate ints: `randn(2, 3)` |
+| Use case | Equal probability across a range | Bell-curve, clustered around zero |
+ 
+Both take the shape as **separate integer arguments**, not a tuple — unlike `np.zeros()` and `np.ones()` which take a tuple.
+ 
+```python
+np.zeros((3, 2))      # ← tuple
+np.random.rand(3, 2)  # ← separate ints
+```
+ 
+---
+ 
+### 18.6 `np.full()` — Array Filled with a Specific Value
+ 
+Creates an array of the given shape where every element is set to a value you choose.
+ 
+```python
+print(np.full([2, 3], 4))
+```
+ 
+Output:
+```
+[[4 4 4]
+ [4 4 4]]
+```
+ 
+The first argument is the shape (as a list or tuple), and the second is the fill value.
+ 
+**When to use:** Creating a mask of constant values, pre-filling an array with a default score, or anywhere you need every cell to start with the same number.
+ 
+---
+ 
+### 18.7 `np.arange()` — Range-Based Array
+ 
+Works like Python's built-in `range()`, but returns a NumPy array instead of a list. It takes three arguments: `start`, `stop` (exclusive), and `step`.
+ 
+```python
+print(np.arange(10, 90, 3))
+```
+ 
+Output:
+```
+[10 13 16 19 22 25 28 31 34 37 40 43 46 49 52 55 58 61 64 67 70 73 76 79 82 85 88]
+```
+ 
+Starts at `10`, counts up in steps of `3`, stops before `90`.
+ 
+#### Combining with `reshape()`
+ 
+`np.arange()` always produces a flat 1D array. You can immediately chain `.reshape()` to reorganise it into any shape — as long as the total number of elements stays the same.
+ 
+```python
+print(np.arange(10, 90, 3).reshape(3, 3, 3))
+```
+ 
+`np.arange(10, 90, 3)` produces 27 elements. `reshape(3, 3, 3)` gives 3 × 3 × 3 = 27 — it fits exactly.
+ 
+Output:
+```
+[[[10 13 16]
+  [19 22 25]
+  [28 31 34]]
+ 
+ [[37 40 43]
+  [46 49 52]
+  [55 58 61]]
+ 
+ [[64 67 70]
+  [73 76 79]
+  [82 85 88]]]
+```
+ 
+#### Using `-1` in reshape
+ 
+You can leave **one dimension** as `-1` and NumPy will calculate what it should be automatically:
+ 
+```python
+np.arange(10, 90, 3).reshape(3, 3, -1)
+# NumPy sees: 3 × 3 × ? = 27, so ? = 3
+```
+ 
+This is especially useful when you know most of the shape but want the code to stay correct even if the data size changes slightly.
+ 
+> **Constraint:** Only one dimension can be `-1`. Using `-1` in more than one place is ambiguous and will raise an error.
+ 
+---
+ 
+### 18.8 `np.linspace()` — Equally Spaced Values
+ 
+Instead of specifying a step size, `np.linspace()` lets you specify **how many values** you want and NumPy divides the range evenly to produce exactly that count.
+ 
+```python
+print(np.linspace(3, 27, 9))
+```
+ 
+Output:
+```
+[ 3.  6.  9. 12. 15. 18. 21. 24. 27.]
+```
+ 
+Arguments: `start=3`, `stop=27`, `num=9`. NumPy creates 9 values that are perfectly equally spaced from 3 to 27 — inclusive of both endpoints by default.
+ 
+The gap between each pair of adjacent values here is `(27 - 3) / (9 - 1) = 3`.
+ 
+#### `arange` vs `linspace` — Which to Use?
+ 
+| | `np.arange()` | `np.linspace()` |
+|---|---|---|
+| You control | The **step size** | The **number of values** |
+| Endpoint included? | No (stop is exclusive) | Yes (both ends included by default) |
+| Output dtype | Matches input (int or float) | Always `float64` |
+| Best when... | You know the step between values | You know how many points you need |
+ 
+**Example:** If you need exactly 100 data points between 0 and 1 for a graph or simulation, `np.linspace(0, 1, 100)` is the natural choice. If you are stepping through indices or counts, `np.arange()` is simpler.
+ 
+---
