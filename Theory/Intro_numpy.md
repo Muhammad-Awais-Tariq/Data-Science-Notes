@@ -500,3 +500,21 @@ Block 2:   [16, 26, 36, 46]   ← row 0
 ```
  
 ---
+
+### Single-Element Indexing — `array7[1, 1, 1]`
+ 
+Each index drills one level deeper, **reducing the result by one dimension at each step**.
+ 
+```python
+print(array7[1, 1, 1])
+```
+ 
+| Step | Index | What it selects | Result |
+|---|---|---|---|
+| 1 | `1` | Block at position 1 | `[[11, 21, 31, 41], [42, 33, 24, 14]]` |
+| 2 | `1` | Row at position 1 within that block | `[42, 33, 24, 14]` |
+| 3 | `1` | Element at position 1 within that row | `33` |
+ 
+Final result: `33`
+ 
+---
