@@ -60,3 +60,25 @@ print(array1 + array3)
 array4 = np.array([1, 3])
 print(array1 + array4)  # raises ValueError
 
+array5 = np.array([[1, 2, 3, 4], [6, 7, 8, 9]])
+array6 = np.array([[1, 2, 3, 4], [61, 71, 81, 91]])
+ 
+print(array5 == array6)
+
+total_common = (array5 == array6).sum()
+print(total_common)
+
+array7 = np.array([
+    [[ 1,  2,  3,  4], [ 4,  3,  2,  1]],
+    [[11, 21, 31, 41], [42, 33, 24, 14]],
+    [[16, 26, 36, 46], [47, 37, 27, 17]]
+])
+ 
+print(array7.shape)
+
+print(array7[1, 1, 1])
+
+print(array7[1:, 0:1, :2])
+
+print(array7[1:, 1, 0])
+
