@@ -359,3 +359,62 @@ print(array1 + array2)
  
 ---
 
+## 15. Broadcasting — Concept First
+ 
+Broadcasting is NumPy's mechanism for performing arithmetic between arrays that have **different shapes**. Instead of requiring you to manually resize arrays, NumPy automatically "stretches" the smaller array to match the larger one — but only under specific rules.
+ 
+### The Broadcasting Rules
+ 
+NumPy compares the shapes of two arrays **from right to left**, dimension by dimension. A dimension is compatible if:
+ 
+1. The sizes are **equal**, or
+2. One of them is **1** (NumPy stretches that dimension to match the other)
+If neither condition holds for any dimension, NumPy raises a `ValueError`.
+ 
+### Worked Example — Compatible
+ 
+```python
+array3 = np.array([2, 3, 4, 5])
+print(array1 + array3)
+```
+ 
+Shape comparison:
+ 
+```
+array1:  (3, 4)
+array3:     (4)   ← treated as (1, 4) by padding a 1 on the left
+```
+ 
+Step by step:
+- Rightmost dimensions: `4` vs `4` → equal ✓
+- Next dimension: `3` vs `1` → stretch the `1` to `3` ✓
+So NumPy replicates `array3` across all 3 rows before adding:
+ 
+```
+array3 becomes:  [[2, 3, 4, 5],
+                  [2, 3, 4, 5],
+                  [2, 3, 4, 5]]
+```
+ 
+Then the addition happens element-by-element as normal.
+ 
+### Worked Example — Incompatible
+ 
+```python
+array4 = np.array([1, 3])
+print(array1 + array4)  # raises ValueError
+```
+ 
+Shape comparison:
+ 
+```
+array1:  (3, 4)
+array4:     (2)   ← treated as (1, 2)
+```
+ 
+- Rightmost dimensions: `4` vs `2` → not equal, and neither is `1` ✗
+No matter how many times NumPy replicates `array4`, it will never produce a shape of `(3, 4)`. The operation fails.
+ 
+> **Rule of thumb:** Broadcasting works when the trailing dimensions either match or one of them is 1. If neither is the case, you will get an error.
+ 
+---
