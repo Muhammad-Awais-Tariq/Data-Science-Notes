@@ -418,3 +418,46 @@ No matter how many times NumPy replicates `array4`, it will never produce a shap
 > **Rule of thumb:** Broadcasting works when the trailing dimensions either match or one of them is 1. If neither is the case, you will get an error.
  
 ---
+
+## 16. Comparison Operations
+ 
+Just like arithmetic, NumPy supports comparison operators applied **element-by-element** across arrays. The result is a **boolean array** of the same shape — each position holds `True` or `False` depending on whether the condition was met at that position.
+ 
+```python
+array5 = np.array([[1, 2, 3, 4], [6, 7, 8, 9]])
+array6 = np.array([[1, 2, 3, 4], [61, 71, 81, 91]])
+ 
+print(array5 == array6)
+```
+ 
+Output:
+```
+[[ True  True  True  True]
+ [False False False False]]
+```
+ 
+The first row of both arrays is identical so every element is `True`. The second row differs completely so every element is `False`.
+ 
+All comparison operators work the same way:
+ 
+| Operator | Meaning |
+|---|---|
+| `==` | Equal to |
+| `!=` | Not equal to |
+| `>` | Greater than |
+| `<` | Less than |
+| `>=` | Greater than or equal to |
+| `<=` | Less than or equal to |
+ 
+### Counting Matches
+ 
+Because `True` is treated as `1` and `False` as `0` in NumPy, you can call `.sum()` on a boolean array to count how many elements satisfy the condition:
+ 
+```python
+total_common = (array5 == array6).sum()
+print(total_common)
+```
+ 
+This returns `4` — the four positions in the first row where both arrays agree.
+ 
+---
