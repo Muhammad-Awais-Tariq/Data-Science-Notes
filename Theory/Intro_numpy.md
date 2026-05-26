@@ -556,3 +556,50 @@ Block 2, Row 0, Elements 0–1:  [16, 26]
 Output shape: `(2, 1, 2)` — 2 blocks, 1 row each, 2 elements each.
  
 ---
+
+### Mixing Exact Indices and Slices — `array7[1:, 1, 0]`
+ 
+You can freely mix slices and exact indices in the same expression.
+ 
+```python
+print(array7[1:, 1, 0])
+```
+ 
+| Step | Selector | Type | What it does |
+|---|---|---|---|
+| Axis 0 | `1:` | Slice | Keeps blocks 1 and 2 — **dimension preserved** |
+| Axis 1 | `1` | Exact index | Takes row 1 from each — **dimension dropped** |
+| Axis 2 | `0` | Exact index | Takes element 0 from each — **dimension dropped** |
+ 
+Tracing through:
+```
+Block 1, Row 1, Element 0:  42
+Block 2, Row 1, Element 0:  47
+```
+ 
+Output: `[42, 47]`  — shape `(2,)` because two dimensions were dropped by the exact indices.
+ 
+---
+ 
+### The Shape Rule — Slices vs Exact Indices
+ 
+This is the single most important rule to remember about NumPy indexing:
+ 
+> **An exact index removes that dimension from the output. A slice keeps it.**
+ 
+```
+array7[1,  1,  0]   → shape ()     — all three dims dropped → scalar
+array7[1:, 1,  0]   → shape (2,)   — one slice kept
+array7[1:, 0:1, :2] → shape (2,1,2)— all three dims kept as slices
+```
+ 
+### Using `:` to Select Everything
+ 
+A bare `:` means "all elements along this axis". It is used when you want to preserve the shape on an axis you are not filtering:
+ 
+```python
+array7[:, 1, :]   # all blocks, row 1, all elements → shape (3, 4)
+array7[0, :, :]   # block 0, all rows, all elements → shape (2, 4)
+```
+ 
+---
