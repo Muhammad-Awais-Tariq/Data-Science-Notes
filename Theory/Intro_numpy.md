@@ -267,3 +267,31 @@ print(climate_results)
 The result is a new array of shape `(100, 4)` — the original 3 feature columns plus the computed yield as a 4th column.
  
 ---
+
+## 12. Writing Data Back to a File
+ 
+Once we have the combined results, we can save them back to a file using `np.savetxt()`:
+ 
+```python
+np.savetxt(
+    "climate_results.txt",
+    climate_results,
+    fmt="%.2f",
+    header="Temperature_C,Humidity_%,Rainfall_mm,Crop_Yield",
+    comments=""
+)
+```
+ 
+Here is what each parameter does:
+ 
+| Parameter | Value | What it does |
+|---|---|---|
+| `fname` | `"climate_results.txt"` | Name of the output file |
+| `X` | `climate_results` | The array to write |
+| `fmt` | `"%.2f"` | Format string — rounds every number to 2 decimal places. Without this, NumPy writes up to 18 decimal places by default |
+| `header` | `"Temperature_C,..."` | A line of text written at the very top of the file, before any data |
+| `comments` | `""` | By default NumPy prepends `#` in front of the header and footer lines (treating them as comments). Setting this to an empty string removes that `#`, giving you a clean CSV header |
+ 
+> **Note:** It is good practice to write to a new file (e.g. `climate_results.txt`) rather than overwriting the original input file. Overwriting means you lose the raw data if something goes wrong.
+ 
+---
