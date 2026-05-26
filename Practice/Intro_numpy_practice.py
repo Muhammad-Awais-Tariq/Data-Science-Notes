@@ -81,4 +81,3 @@ print(array7[1, 1, 1])
 print(array7[1:, 0:1, :2])
 
 print(array7[1:, 1, 0])
-
