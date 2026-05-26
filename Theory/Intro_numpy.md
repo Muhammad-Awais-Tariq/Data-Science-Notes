@@ -601,5 +601,6 @@ A bare `:` means "all elements along this axis". It is used when you want to pre
 array7[:, 1, :]   # all blocks, row 1, all elements → shape (3, 4)
 array7[0, :, :]   # block 0, all rows, all elements → shape (2, 4)
 ```
- 
+### Visualization
+![Indexing Visualization](Indexing_Visualization.jpg)
 ---
