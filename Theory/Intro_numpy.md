@@ -518,3 +518,41 @@ print(array7[1, 1, 1])
 Final result: `33`
  
 ---
+
+### Slice Indexing — `array7[1:, 0:1, :2]`
+ 
+A **slice** (`start:stop`) selects a range instead of a single element. Crucially, **slices preserve the dimension** — the axis stays in the output shape.
+ 
+```python
+print(array7[1:, 0:1, :2])
+```
+ 
+Let's break down each part:
+ 
+**Axis 0 — `1:`**
+```
+Start from block 1, go to the end.
+Selects:  Block 1 and Block 2
+```
+ 
+**Axis 1 — `0:1`**
+```
+Start from row 0, stop before row 1.
+Selects:  Row 0 only — but keeps the dimension (shape stays 1, not dropped)
+```
+ 
+**Axis 2 — `:2`**
+```
+Start from the beginning, stop before index 2.
+Selects:  Elements at positions 0 and 1
+```
+ 
+Tracing through the selected data:
+```
+Block 1, Row 0, Elements 0–1:  [11, 21]
+Block 2, Row 0, Elements 0–1:  [16, 26]
+```
+ 
+Output shape: `(2, 1, 2)` — 2 blocks, 1 row each, 2 elements each.
+ 
+---
