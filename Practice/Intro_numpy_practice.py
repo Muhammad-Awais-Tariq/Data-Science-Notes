@@ -81,3 +81,25 @@ print(array7[1, 1, 1])
 print(array7[1:, 0:1, :2])
 
 print(array7[1:, 1, 0])
+
+array8 = np.zeros((3, 2))
+print(array8)
+
+array9 = np.ones((3, 2))
+print(array9)
+
+print(np.eye(3))
+
+print(np.random.rand(5))
+print(np.random.rand(2, 3))
+
+print(np.random.randn(5))
+print(np.random.randn(2, 3))
+
+print(np.full([2, 3], 4))
+
+print(np.arange(10, 90, 3))
+print(np.arange(10, 90, 3).reshape(3, 3, 3))
+np.arange(10, 90, 3).reshape(3, 3, -1)
+
+print(np.linspace(3, 27, 9))
