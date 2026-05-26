@@ -852,3 +852,34 @@ The gap between each pair of adjacent values here is `(27 - 3) / (9 - 1) = 3`.
 **Example:** If you need exactly 100 data points between 0 and 1 for a graph or simulation, `np.linspace(0, 1, 100)` is the natural choice. If you are stepping through indices or counts, `np.arange()` is simpler.
  
 ---
+
+## 19. Full Summary
+ 
+| Operation | Method | Use Case |
+|---|---|---|
+| Dot product (1D) | `np.dot(a, b)` | Weighted sum of a single region |
+| Element-wise multiply | `a * b` | Pair-wise multiplication without summing |
+| Sum of array | `array.sum()` | Collapse array to a single value |
+| Matrix × vector (2D) | `np.matmul(M, v)` or `M @ v` | Weighted sum across multiple regions |
+| Load from CSV | `np.genfromtxt(file, delimiter, skip_header)` | Read tabular data into an array |
+| Reshape | `array.reshape(-1, 1)` | Change array dimensions for alignment |
+| Combine arrays | `np.concatenate((a, b), axis=1)` | Add columns to an existing array |
+| Save to file | `np.savetxt(file, array, fmt, header)` | Write array back to a text/CSV file |
+| Scalar arithmetic | `array + 2`, `array * 3`, etc. | Apply one value to every element |
+| Array arithmetic | `array1 + array2` | Element-wise operation on same-shape arrays |
+| Broadcasting | `(3,4) array + (4,) array` | Arithmetic across compatible but different shapes |
+| Comparison | `array1 == array2`, `array1 > array2` | Element-wise boolean result |
+| Count matches | `(array1 == array2).sum()` | How many elements satisfy a condition |
+| Single-element index | `array[1, 1, 0]` | Select one value, drops all dimensions |
+| Slice | `array[1:, 0:1, :2]` | Select a range, preserves dimensions |
+| Mixed index+slice | `array[1:, 1, 0]` | Slices keep dims; exact indices drop them |
+| All zeros | `np.zeros((r, c))` | Blank initialisation array |
+| All ones | `np.ones((r, c))` | Default weight or neutral matrix |
+| Identity matrix | `np.eye(n)` | Square matrix with 1s on the diagonal |
+| Uniform random | `np.random.rand(r, c)` | Values in `[0, 1)`, equal probability |
+| Normal random | `np.random.randn(r, c)` | Values clustered around 0, bell curve |
+| Constant fill | `np.full([r, c], val)` | Every element set to the same value |
+| Range array | `np.arange(start, stop, step)` | Evenly stepped values, stop excluded |
+| Equally spaced | `np.linspace(start, stop, num)` | Fixed count of points, stop included |
+ 
+---
