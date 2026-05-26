@@ -295,3 +295,41 @@ Here is what each parameter does:
 > **Note:** It is good practice to write to a new file (e.g. `climate_results.txt`) rather than overwriting the original input file. Overwriting means you lose the raw data if something goes wrong.
  
 ---
+
+## 13. Useful NumPy Functions Reference
+ 
+NumPy has a large standard library. Here are some of the most commonly used functions, all documented at [numpy.org/doc](https://numpy.org/doc/):
+ 
+| Function | What it does |
+|---|---|
+| `np.sum(a)` | Sum of all elements (or along an axis) |
+| `np.mean(a)` | Arithmetic mean |
+| `np.median(a)` | Median value |
+| `np.max(a)` / `np.min(a)` | Maximum / minimum element |
+| `np.exp(a)` | Element-wise exponential (eˣ) |
+| `np.round(a, n)` | Round elements to n decimal places |
+| `np.reshape(a, shape)` | Change shape without changing data |
+| `np.concatenate((a, b))` | Join arrays along an existing axis |
+| `np.stack((a, b))` | Join arrays along a **new** axis |
+| `np.split(a, n)` | Split an array into n equal sub-arrays |
+| `np.matmul(a, b)` | Matrix multiplication |
+| `np.dot(a, b)` | Dot product (also works for matrix multiply) |
+| `np.transpose(a)` / `a.T` | Flip rows and columns |
+| `np.linalg.eigvals(a)` | Eigenvalues of a square matrix |
+ 
+---
+ 
+## 14. Full Summary
+ 
+| Operation | Method | Use Case |
+|---|---|---|
+| Dot product (1D) | `np.dot(a, b)` | Weighted sum of a single region |
+| Element-wise multiply | `a * b` | Pair-wise multiplication without summing |
+| Sum of array | `array.sum()` | Collapse array to a single value |
+| Matrix × vector (2D) | `np.matmul(M, v)` or `M @ v` | Weighted sum across multiple regions |
+| Load from CSV | `np.genfromtxt(file, delimiter, skip_header)` | Read tabular data into an array |
+| Reshape | `array.reshape(-1, 1)` | Change array dimensions for alignment |
+| Combine arrays | `np.concatenate((a, b), axis=1)` | Add columns to an existing array |
+| Save to file | `np.savetxt(file, array, fmt, header)` | Write array back to a text/CSV file |
+ 
+---
