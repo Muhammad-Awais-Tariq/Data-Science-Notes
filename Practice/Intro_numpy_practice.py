@@ -46,3 +46,17 @@ np.savetxt(
     header="Temperature_C,Humidity_%,Rainfall_mm,Crop_Yield",
     comments=""
 )
+
+array1 = np.array([[1, 3, 4, 3], [2, 6, 7, 1], [7, 3, 4, 1]])
+array2 = np.array([[11, 13, 14, 13], [22, 36, 47, 51], [17, 23, 64, 71]])
+
+print(array2 + 2)
+
+print(array1 + array2)
+
+array3 = np.array([2, 3, 4, 5])
+print(array1 + array3)
+
+array4 = np.array([1, 3])
+print(array1 + array4)  # raises ValueError
+
