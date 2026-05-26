@@ -318,18 +318,44 @@ NumPy has a large standard library. Here are some of the most commonly used func
 | `np.linalg.eigvals(a)` | Eigenvalues of a square matrix |
  
 ---
+
+## 14. Arithmetic Operations
  
-## 14. Full Summary
+NumPy supports all standard arithmetic operations. These can be applied in two ways — on a **scalar** (a single number) or between **two arrays**.
  
-| Operation | Method | Use Case |
+```python
+array1 = np.array([[1, 3, 4, 3], [2, 6, 7, 1], [7, 3, 4, 1]])
+array2 = np.array([[11, 13, 14, 13], [22, 36, 47, 51], [17, 23, 64, 71]])
+```
+ 
+### 14.1 Scalar Operations
+ 
+A scalar operation applies the same value to **every single element** in the array:
+ 
+```python
+print(array2 + 2)
+```
+ 
+This adds `2` to every element of `array2`. The same works for all operators:
+ 
+| Operator | Example | Effect |
 |---|---|---|
-| Dot product (1D) | `np.dot(a, b)` | Weighted sum of a single region |
-| Element-wise multiply | `a * b` | Pair-wise multiplication without summing |
-| Sum of array | `array.sum()` | Collapse array to a single value |
-| Matrix × vector (2D) | `np.matmul(M, v)` or `M @ v` | Weighted sum across multiple regions |
-| Load from CSV | `np.genfromtxt(file, delimiter, skip_header)` | Read tabular data into an array |
-| Reshape | `array.reshape(-1, 1)` | Change array dimensions for alignment |
-| Combine arrays | `np.concatenate((a, b), axis=1)` | Add columns to an existing array |
-| Save to file | `np.savetxt(file, array, fmt, header)` | Write array back to a text/CSV file |
+| `+` | `array + 2` | Add 2 to every element |
+| `-` | `array - 2` | Subtract 2 from every element |
+| `*` | `array * 2` | Multiply every element by 2 |
+| `/` | `array / 2` | Divide every element by 2 |
+| `**` | `array ** 2` | Square every element |
+| `%` | `array % 2` | Remainder when divided by 2 |
+ 
+### 14.2 Array + Array (Same Shape)
+ 
+When both arrays have **identical shapes**, the operation is applied element-by-element — each position in one array is paired with the same position in the other:
+ 
+```python
+print(array1 + array2)
+```
+ 
+`array1` and `array2` both have shape `(3, 4)`, so this works without any issues. If the shapes do not match and broadcasting (explained below) cannot reconcile them, NumPy raises a `ValueError`.
  
 ---
+
