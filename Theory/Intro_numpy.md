@@ -180,4 +180,25 @@ Both produce identical results — a 1D array of 5 values, one crop yield per re
 
 ---
 
-
+ 
+## 8. Reading Data from a CSV File
+ 
+So far we've been typing data directly into the code. In practice, data lives in files. NumPy provides `np.genfromtxt()` to load tabular data from a text or CSV file.
+ 
+```python
+climate_data_csv = np.genfromtxt("climate_data.txt", delimiter=",", skip_header=1)
+print(climate_data_csv)
+print(climate_data_csv.shape)
+```
+ 
+The three parameters do the following:
+ 
+| Parameter | Value | What it does |
+|---|---|---|
+| `fname` | `"climate_data.txt"` | Path to the file to read |
+| `delimiter` | `","` | The character used to separate values in each row |
+| `skip_header` | `1` | Skips the first N lines — used to ignore the column header row |
+ 
+Once loaded, `climate_data_csv` is a normal NumPy 2D array and you can use it exactly like the manually defined one from before. If the file has 100 rows and 3 columns, its shape will be `(100, 3)`.
+ 
+---
