@@ -909,7 +909,7 @@ Each element in `file_lines` still has a `\n` newline character at the end. To r
  
 ---
 
-## 22. Parsing CSV Data Manually
+## 21. Parsing CSV Data Manually
  
 `np.genfromtxt()` handles CSV loading automatically, but understanding how to parse a CSV by hand is important — it gives you full control and works in situations where NumPy is not available or where the data needs custom cleaning logic.
  
@@ -990,5 +990,51 @@ create_dict(["Temperature_C", "Humidity_%", "Rainfall_mm"], [50.0, 90.0, 50.0])
 ```
  
 Working with dictionaries is much more readable than raw arrays — you access a value by name (`row["Temperature_C"]`) rather than by position (`row[0]`).
+ 
+---
+
+## 22. The Complete `read_csv()` Function
+ 
+The three helper functions above are combined into a single `read_csv()` function that reads an entire file and returns a **list of dictionaries** — one dictionary per data row.
+ 
+```python
+def read_csv(path):
+    result = []
+ 
+    with open(path, "r") as f:
+        lines = f.readlines()
+        headers = parse_header(lines[0])
+ 
+        for line in lines[1:]:
+            values = parse_values(line)
+            item_dict = create_dict(headers, values)
+            result.append(item_dict)
+ 
+    return result
+```
+ 
+Walking through it step by step:
+ 
+| Line | What it does |
+|---|---|
+| `open(path, "r")` | Opens the file in read mode (`"r"`) |
+| `lines = f.readlines()` | Loads all lines into a list |
+| `headers = parse_header(lines[0])` | Extracts column names from the first line |
+| `for line in lines[1:]` | Iterates over every line **except** the header (`1:` skips index 0) |
+| `values = parse_values(line)` | Converts the line's comma-separated text into a list of floats |
+| `item_dict = create_dict(headers, values)` | Pairs the values with their column names |
+| `result.append(item_dict)` | Adds the completed row-dictionary to the output list |
+ 
+Usage:
+ 
+```python
+data = read_csv(r"F:\Data-Science-Notes\Practice\climate_data.txt")
+ 
+print(data[0])
+# → {"Temperature_C": 50.0, "Humidity_%": 90.0, "Rainfall_mm": 50.0}
+ 
+print(data[0]["Temperature_C"])
+# → 50.0
+```
  
 ---
