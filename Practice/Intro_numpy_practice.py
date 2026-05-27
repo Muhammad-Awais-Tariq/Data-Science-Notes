@@ -103,3 +103,4 @@ print(np.arange(10, 90, 3).reshape(3, 3, 3))
 np.arange(10, 90, 3).reshape(3, 3, -1)
 
 print(np.linspace(3, 27, 9))
+

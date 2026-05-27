@@ -853,33 +853,28 @@ The gap between each pair of adjacent values here is `(27 - 3) / (9 - 1) = 3`.
  
 ---
 
-## 19. Full Summary
+## 19. Downloading Files from the Web
  
-| Operation | Method | Use Case |
-|---|---|---|
-| Dot product (1D) | `np.dot(a, b)` | Weighted sum of a single region |
-| Element-wise multiply | `a * b` | Pair-wise multiplication without summing |
-| Sum of array | `array.sum()` | Collapse array to a single value |
-| Matrix × vector (2D) | `np.matmul(M, v)` or `M @ v` | Weighted sum across multiple regions |
-| Load from CSV | `np.genfromtxt(file, delimiter, skip_header)` | Read tabular data into an array |
-| Reshape | `array.reshape(-1, 1)` | Change array dimensions for alignment |
-| Combine arrays | `np.concatenate((a, b), axis=1)` | Add columns to an existing array |
-| Save to file | `np.savetxt(file, array, fmt, header)` | Write array back to a text/CSV file |
-| Scalar arithmetic | `array + 2`, `array * 3`, etc. | Apply one value to every element |
-| Array arithmetic | `array1 + array2` | Element-wise operation on same-shape arrays |
-| Broadcasting | `(3,4) array + (4,) array` | Arithmetic across compatible but different shapes |
-| Comparison | `array1 == array2`, `array1 > array2` | Element-wise boolean result |
-| Count matches | `(array1 == array2).sum()` | How many elements satisfy a condition |
-| Single-element index | `array[1, 1, 0]` | Select one value, drops all dimensions |
-| Slice | `array[1:, 0:1, :2]` | Select a range, preserves dimensions |
-| Mixed index+slice | `array[1:, 1, 0]` | Slices keep dims; exact indices drop them |
-| All zeros | `np.zeros((r, c))` | Blank initialisation array |
-| All ones | `np.ones((r, c))` | Default weight or neutral matrix |
-| Identity matrix | `np.eye(n)` | Square matrix with 1s on the diagonal |
-| Uniform random | `np.random.rand(r, c)` | Values in `[0, 1)`, equal probability |
-| Normal random | `np.random.randn(r, c)` | Values clustered around 0, bell curve |
-| Constant fill | `np.full([r, c], val)` | Every element set to the same value |
-| Range array | `np.arange(start, stop, step)` | Evenly stepped values, stop excluded |
-| Equally spaced | `np.linspace(start, stop, num)` | Fixed count of points, stop included |
+So far all our data has either been typed in manually or already sitting on disk. In real projects, data is usually hosted online. Python's built-in `urllib.request` module lets you download a file from any URL and save it directly to a local path — no third-party libraries needed.
+ 
+```python
+import urllib.request
+ 
+url = "https://raw.githubusercontent.com/owid/co2-data/master/owid-co2-data.csv"
+target_path = r"F:\Data-Science-Notes\Practice\climate_data.txt"
+ 
+urllib.request.urlretrieve(url, target_path)
+```
+ 
+`urlretrieve(url, filename)` takes two arguments:
+ 
+| Argument | What it does |
+|---|---|
+| `url` | The full web address of the file to download |
+| `filename` | The local path where the downloaded file should be saved |
+ 
+The function makes an HTTP request, streams the response, and writes it to the path you give it. If the file already exists at that path it will be overwritten.
+ 
+> **Windows paths and backslashes:** In Python, a backslash `\` inside a normal string is treated as the start of an escape sequence (e.g. `\n` means newline, `\t` means tab). To write a Windows path safely, prefix the string with `r` to make it a **raw string** — this tells Python to treat every backslash literally: `r"F:\Data-Science-Notes\Practice\climate_data.txt"`. Alternatively you can double every backslash: `"F:\\Data-Science-Notes\\Practice\\climate_data.txt"`. Both are equivalent.
  
 ---
