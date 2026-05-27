@@ -878,3 +878,33 @@ The function makes an HTTP request, streams the response, and writes it to the p
 > **Windows paths and backslashes:** In Python, a backslash `\` inside a normal string is treated as the start of an escape sequence (e.g. `\n` means newline, `\t` means tab). To write a Windows path safely, prefix the string with `r` to make it a **raw string** — this tells Python to treat every backslash literally: `r"F:\Data-Science-Notes\Practice\climate_data.txt"`. Alternatively you can double every backslash: `"F:\\Data-Science-Notes\\Practice\\climate_data.txt"`. Both are equivalent.
  
 ---
+
+## 20. Reading a File in Python
+ 
+Once a file is on disk you can open it and read its contents using Python's built-in `open()` function combined with a `with` block.
+ 
+```python
+with open(r"F:\Data-Science-Notes\Practice\climate_data.txt") as f:
+    file_content = f.read()
+    print(file_content)
+```
+ 
+### Why `with`?
+ 
+The `with` statement is the correct way to open files in Python. It guarantees that the file is **automatically closed** when the block finishes — even if an error occurs inside it. Without `with`, you would have to call `f.close()` manually, and if an exception is raised before that line, the file stays open, which can cause data corruption or resource leaks.
+ 
+### Two Ways to Read
+ 
+| Method | What it returns | Best for |
+|---|---|---|
+| `f.read()` | One big string containing the entire file | Small files, inspecting raw content |
+| `f.readlines()` | A list where each element is one line (including `\n`) | Processing line by line |
+ 
+```python
+with open(r"F:\Data-Science-Notes\Practice\climate_data.txt") as f:
+    file_lines = f.readlines()
+```
+ 
+Each element in `file_lines` still has a `\n` newline character at the end. To remove it, call `.strip()` on individual lines as you process them — not on the list itself (`.strip()` is a string method, not a list method).
+ 
+---
