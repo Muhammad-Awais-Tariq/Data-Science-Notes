@@ -104,3 +104,63 @@ np.arange(10, 90, 3).reshape(3, 3, -1)
 
 print(np.linspace(3, 27, 9))
 
+import urllib.request
+
+def parse_header(header_line):
+    return header_line.strip().split(",")
+
+def parse_values(data_line):
+    values = []
+    for item in data_line.strip().split(","):
+        if item.strip() == "":
+            values.append(0.0)
+        else:
+            values.append(float(item))
+    return values
+
+def create_dict(headers, values):
+    result = {}
+    for header, value in zip(headers, values):
+        result[header] = value
+    return result
+
+def read_csv(path):
+    result = []
+ 
+    with open(path, "r") as f:
+        lines = f.readlines()
+        headers = parse_header(lines[0])
+ 
+        for line in lines[1:]:
+            values = parse_values(line)
+            item_dict = create_dict(headers, values)
+            result.append(item_dict)
+ 
+    return result
+
+def write_csv(items, path):
+    with open(path, "w") as f:
+        if len(items) == 0:
+            return
+ 
+        headers = list(items[0].keys())
+        f.write(",".join(headers) + "\n")
+ 
+        for item in items:
+            values = []
+            for header in headers:
+                values.append(str(item.get(header, "")))
+            f.write(",".join(values) + "\n")
+
+            
+url = "https://raw.githubusercontent.com/owid/co2-data/master/owid-co2-data.csv"
+target_path = r"F:\Data-Science-Notes\Practice\climate_data.txt"
+ 
+urllib.request.urlretrieve(url, target_path)
+
+with open(r"F:\Data-Science-Notes\Practice\climate_data.txt") as f:
+    file_content = f.read()
+    file_lines = f.readlines()    
+    print(file_content)
+
+
