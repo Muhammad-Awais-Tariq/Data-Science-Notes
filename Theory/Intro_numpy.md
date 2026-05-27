@@ -1081,3 +1081,57 @@ write_csv(data, r"F:\Data-Science-Notes\Practice\climate_data_output.txt")
 > **Note:** `"w"` mode truncates (erases) the file before writing. If you want to **add** rows to an existing file without deleting what is already there, use `"a"` (append mode) instead.
  
 ---
+
+## 24. Os Module
+ 
+Python's built-in `os` module, gives you tools to work with the file system itself — not just the content of files.
+ 
+The most commonly used function in this context is `os.path.join()`, which builds file paths correctly for whatever operating system you are on:
+ 
+```python
+import os
+ 
+base_dir = r"F:\\Data-Science-Notes\\Practice"
+filename = "climate_data.txt"
+ 
+full_path = os.path.join(base_dir, filename)
+# → "F:\Data-Science-Notes\Practice\climate_data.txt"
+```
+ 
+On Windows this produces backslash-separated paths; on Mac/Linux it uses forward slashes. Using `os.path.join()` instead of manually concatenating strings with `+` or `\` means your code works on any machine without changes.
+ 
+Other commonly used `os` tools in data science:
+ 
+| Function | What it does |
+|---|---|
+| `os.path.join(dir, file)` | Build a path from parts, cross-platform |
+| `os.path.exists(path)` | Returns `True` if the file or folder exists |
+| `os.path.dirname(path)` | Returns just the folder part of a path |
+| `os.path.basename(path)` | Returns just the filename part of a path |
+| `os.makedirs(path, exist_ok=True)` | Creates a folder (and any missing parent folders) |
+| `os.getcwd()` | Returns the current working directory |
+| `os.listdir(path)` | Lists all files and folders in a directory |
+ 
+**Practical example** — download a file and save it safely using `os`:
+ 
+```python
+import os
+import urllib.request
+ 
+base_dir = r"F:\Data-Science-Notes\Practice"
+filename = "climate_data.txt"
+url = "https://raw.githubusercontent.com/owid/co2-data/master/owid-co2-data.csv"
+ 
+os.makedirs(base_dir, exist_ok=True)
+full_path = os.path.join(base_dir, filename)
+ 
+if not os.path.exists(full_path):
+    urllib.request.urlretrieve(url, full_path)
+    print("Downloaded.")
+else:
+    print("File already exists, skipping download.")
+```
+ 
+This pattern — check if the file exists before downloading — is very common in data science notebooks so you do not re-download large files every time you run the script.
+ 
+---
