@@ -1,117 +1,162 @@
 # NumPy Notes — Arrays, Dot Product & Matrix Multiplication
 
 ---
+ 
+## Table of Contents
+ 
+**NumPy Fundamentals**
+1. [The Problem — Predicting Crop Yield](#1-the-problem--predicting-crop-yield)
+2. [Manual Approach — Pure Python](#2-manual-approach--pure-python)
+3. [The Dot Product — Concept First](#3-the-dot-product--concept-first)
+4. [NumPy Arrays](#4-numpy-arrays)
+5. [Benefits of NumPy Arrays](#5-benefits-of-numpy-arrays)
+6. [2D NumPy Arrays — Multiple Regions](#6-2d-numpy-arrays--multiple-regions)
+7. [Matrix Multiplication — Concept First](#7-matrix-multiplication--concept-first)
+**File I/O with NumPy**
+8. [Reading Data from a CSV File](#8-reading-data-from-a-csv-file)
+9. [Computing Yield from Loaded Data](#9-computing-yield-from-loaded-data)
+10. [reshape() — Concept First](#10-reshape--concept-first)
+11. [Concatenating Arrays — Attaching the Yield Column](#11-concatenating-arrays--attaching-the-yield-column)
+12. [Writing Data Back to a File](#12-writing-data-back-to-a-file)
+13. [Useful NumPy Functions Reference](#13-useful-numpy-functions-reference)
+ 
+**Array Operations**
+14. [Arithmetic Operations](#14-arithmetic-operations)
+15. [Broadcasting — Concept First](#15-broadcasting--concept-first)
+16. [Comparison Operations](#16-comparison-operations)
+17. [Array Indexing and Slicing](#17-array-indexing-and-slicing)
+ 
+**Creating Arrays**
+18. [Special Array Creation Functions](#18-special-array-creation-functions)
+  - [18.1 np.zeros()](#181-npzeros--array-of-all-zeros)
+  - [18.2 np.ones()](#182-npones--array-of-all-ones)
+  - [18.3 np.eye()](#183-npeye--identity-matrix)
+  - [18.4 np.random.rand()](#184-nprandomrand--uniform-random-values)
+  - [18.5 np.random.randn()](#185-nprandomrandn--standard-normal-random-values)
+  - [18.6 np.full()](#186-npfull--array-filled-with-a-specific-value)
+  - [18.7 np.arange()](#187-nparange--range-based-array)
+  - [18.8 np.linspace()](#188-nplinspace--equally-spaced-values)
+**Python File I/O & CSV Parsing**
+19. [Downloading Files from the Web](#19-downloading-files-from-the-web)
+20. [Reading a File in Python](#20-reading-a-file-in-python)
+21. [Parsing CSV Data Manually](#21-parsing-csv-data-manually)
+22. [The Complete read_csv() Function](#22-the-complete-read_csv-function)
+23. [The write_csv() Function](#23-the-write_csv-function)
+24. [What the Instructor Means by os](#24-what-the-instructor-means-by-os)
+ 
+---
+
 
 ## 1. The Problem — Predicting Crop Yield
-
+ 
 Suppose we want to calculate the **total crop yield** for a region using environmental factors. Each factor (humidity, rainfall, temperature) has a corresponding weight that represents how much it influences the yield.
-
+ 
 For a region called **Kamra**, the data is:
-
+ 
 | Factor      | Value | Weight |
 |-------------|-------|--------|
 | Humidity    | 50    | 0.1    |
 | Rainfall    | 30    | 0.5    |
 | Temperature | 70    | 0.3    |
-
+ 
 ---
-
+ 
 ## 2. Manual Approach — Pure Python
-
+ 
 Before using NumPy, we can calculate this using a simple loop:
-
+ 
 ```python
 Kamra = [50, 30, 70]
 weights = [0.1, 0.5, 0.3]
-
+ 
 def crop_yield(region, weights):
     result = 0
     for x, y in zip(region, weights):
         result += x * y
     return result
-
+ 
 print(crop_yield(Kamra, weights))
 ```
-
+ 
 `zip()` pairs up each element from both lists and multiplies them together one by one, accumulating the total.
-
+ 
 ---
-
+ 
 ## 3. The Dot Product — Concept First
-
+ 
 What the function above is actually computing is called the **dot product**.
-
+ 
 Given two vectors **A** and **B** of equal length:
-
+ 
 $$\mathbf{A} \cdot \mathbf{B} = \sum_{i=1}^{n} A_i \times B_i$$
-
+ 
 In plain terms — **multiply each pair of elements, then sum all the results.**
-
+ 
 For our example:
-
+ 
 ```
 (50 × 0.1) + (30 × 0.5) + (70 × 0.3)
 =  5  +  15  +  21
 =  41
 ```
-
+ 
 The dot product is used here because we want a **weighted sum** — each factor contributes to the final yield proportionally to its weight.
-
+ 
 ---
-
+ 
 ## 4. NumPy Arrays
-
+ 
 NumPy provides a dedicated array type (`numpy.ndarray`) that is far more efficient than Python lists for numerical computation.
-
+ 
 ```python
 import numpy as np
-
+ 
 Kamra = np.array([50, 30, 70])
 weights = np.array([0.1, 0.5, 0.3])
 ```
-
+ 
 Both variables now have the type `numpy.ndarray`.
-
+ 
 ### 4.1 Dot Product with NumPy
-
+ 
 NumPy has a built-in `np.dot()` function that computes the dot product directly:
-
+ 
 ```python
 print(np.dot(Kamra, weights))
 ```
-
+ 
 ### 4.2 Element-wise Multiplication + Sum
-
+ 
 You can also compute it step by step using element-wise multiplication followed by `.sum()`:
-
+ 
 ```python
 multiplication = Kamra * weights
 total = multiplication.sum()
 print(total)
 ```
-
+ 
 Or more concisely in a single line:
-
+ 
 ```python
 print((Kamra * weights).sum())
 ```
-
+ 
+> **Note:** Avoid using `sum` as a variable name — it shadows Python's built-in `sum()` function.
+ 
 All three approaches — `crop_yield()`, `np.dot()`, and `(array * array).sum()` — produce the **exact same result**. NumPy just makes it cleaner and faster.
-
+ 
 ---
-
+ 
 ## 5. Benefits of NumPy Arrays
-
+ 
 1. **Ease of use** — Most mathematical operations (dot product, sum, mean, etc.) are built-in methods. No need to write manual loops.
-
 2. **Performance** — NumPy is implemented in **C** (not Python), so array operations run significantly faster, especially on large datasets. This matters when working with thousands or millions of data points.
-
 ---
-
+ 
 ## 6. 2D NumPy Arrays — Multiple Regions
-
+ 
 When you have data for more than one region, a **2D array** (a matrix) is the right structure. NumPy supports any number of dimensions — 1D, 2D, 3D, or more (n-dimensional).
-
+ 
 ```python
 climate_data = np.array([
     [50, 90, 50],
@@ -121,65 +166,64 @@ climate_data = np.array([
     [70, 50, 30]
 ])
 ```
-
+ 
 Each **row** is a region; each **column** is a feature (humidity, rainfall, temperature).
-
+ 
 ### Shape
-
+ 
 ```python
 print(climate_data.shape)
 ```
-
+ 
 Returns `(5, 3)` — 5 rows (regions) and 3 columns (features).
-
+ 
 ### Data Type
-
+ 
 All elements in a NumPy array must share the **same data type**. This is required for performance — uniform types allow the data to be stored in a compact, contiguous block of memory.
-
+ 
 ```python
 print(climate_data.dtype)
 ```
-
+ 
 Returns `int64` — each number is stored as a 64-bit integer.
-
+ 
 > **Important:** If even a single element in the array is a float, NumPy will automatically convert **all** values to `float64`.
-
+ 
 ---
-
+ 
 ## 7. Matrix Multiplication — Concept First
-
+ 
 When you have a 2D array (matrix) and a 1D array (vector), multiplying them together is called **matrix-vector multiplication**.
-
+ 
 Given a matrix **M** of shape `(n, k)` and a vector **v** of shape `(k,)`, the result is a vector of shape `(n,)` where each element is the **dot product of a row of M with v**.
-
+ 
 Visually for our case (`5×3` matrix × `3,` vector → `5,` vector):
-
+ 
 ```
 Region 1: (50×0.1) + (90×0.5) + (50×0.3) = 5  + 45 + 15 = 65
 Region 2: (42×0.1) + (65×0.5) + (70×0.3) = 4.2 + 32.5 + 21 = 57.7
 ... and so on for each region
 ```
-
+ 
 Each value in the output is the **weighted yield for that region**.
-
+ 
 ### 7.1 Using `np.matmul()`
-
+ 
 ```python
 print(np.matmul(climate_data, weights))
 ```
-
+ 
 ### 7.2 Using the `@` Operator
-
+ 
 Python's `@` operator is shorthand for matrix multiplication and is the modern, preferred way to write it:
-
+ 
 ```python
 print(climate_data @ weights)
 ```
-
+ 
 Both produce identical results — a 1D array of 5 values, one crop yield per region.
-
+ 
 ---
-
  
 ## 8. Reading Data from a CSV File
  
@@ -202,7 +246,7 @@ The three parameters do the following:
 Once loaded, `climate_data_csv` is a normal NumPy 2D array and you can use it exactly like the manually defined one from before. If the file has 100 rows and 3 columns, its shape will be `(100, 3)`.
  
 ---
-
+ 
 ## 9. Computing Yield from Loaded Data
  
 With the data loaded, we can apply the same matrix multiplication to get the crop yield for every region in one step:
@@ -212,9 +256,11 @@ crop_yield_results = climate_data_csv @ weights
 ```
  
 This produces a 1D array of shape `(100,)` — one yield value per row (region) in the CSV.
-
+ 
+> **Note:** The original code reused the name `crop_yield` for this result, which overwrites the function defined earlier. Renamed here to `crop_yield_results` to avoid that conflict.
+ 
 ---
-
+ 
 ## 10. `reshape()` — Concept First
  
 Before we can attach the yield results back to the climate data, we need to understand `reshape()`.
@@ -249,7 +295,7 @@ crop_yield_results.reshape(-1, 1)
 > **Tip:** Using `-1` instead of a hardcoded `100` is better practice. NumPy automatically infers that dimension from the array's size, so the code still works even if the number of rows changes.
  
 ---
-
+ 
 ## 11. Concatenating Arrays — Attaching the Yield Column
  
 `np.concatenate()` joins two or more arrays together. The `axis` parameter controls the direction:
@@ -267,7 +313,7 @@ print(climate_results)
 The result is a new array of shape `(100, 4)` — the original 3 feature columns plus the computed yield as a 4th column.
  
 ---
-
+ 
 ## 12. Writing Data Back to a File
  
 Once we have the combined results, we can save them back to a file using `np.savetxt()`:
@@ -295,7 +341,7 @@ Here is what each parameter does:
 > **Note:** It is good practice to write to a new file (e.g. `climate_results.txt`) rather than overwriting the original input file. Overwriting means you lose the raw data if something goes wrong.
  
 ---
-
+ 
 ## 13. Useful NumPy Functions Reference
  
 NumPy has a large standard library. Here are some of the most commonly used functions, all documented at [numpy.org/doc](https://numpy.org/doc/):
@@ -318,7 +364,7 @@ NumPy has a large standard library. Here are some of the most commonly used func
 | `np.linalg.eigvals(a)` | Eigenvalues of a square matrix |
  
 ---
-
+ 
 ## 14. Arithmetic Operations
  
 NumPy supports all standard arithmetic operations. These can be applied in two ways — on a **scalar** (a single number) or between **two arrays**.
@@ -358,7 +404,7 @@ print(array1 + array2)
 `array1` and `array2` both have shape `(3, 4)`, so this works without any issues. If the shapes do not match and broadcasting (explained below) cannot reconcile them, NumPy raises a `ValueError`.
  
 ---
-
+ 
 ## 15. Broadcasting — Concept First
  
 Broadcasting is NumPy's mechanism for performing arithmetic between arrays that have **different shapes**. Instead of requiring you to manually resize arrays, NumPy automatically "stretches" the smaller array to match the larger one — but only under specific rules.
@@ -418,7 +464,7 @@ No matter how many times NumPy replicates `array4`, it will never produce a shap
 > **Rule of thumb:** Broadcasting works when the trailing dimensions either match or one of them is 1. If neither is the case, you will get an error.
  
 ---
-
+ 
 ## 16. Comparison Operations
  
 Just like arithmetic, NumPy supports comparison operators applied **element-by-element** across arrays. The result is a **boolean array** of the same shape — each position holds `True` or `False` depending on whether the condition was met at that position.
@@ -461,7 +507,7 @@ print(total_common)
 This returns `4` — the four positions in the first row where both arrays agree.
  
 ---
-
+ 
 ## 17. Array Indexing and Slicing
  
 NumPy extends Python's indexing to multi-dimensional arrays. Instead of chaining brackets like `array[1][1][0]`, NumPy lets you write all indices in a single bracket separated by commas: `array[1, 1, 0]`. This is cleaner and also faster.
@@ -500,7 +546,7 @@ Block 2:   [16, 26, 36, 46]   ← row 0
 ```
  
 ---
-
+ 
 ### Single-Element Indexing — `array7[1, 1, 1]`
  
 Each index drills one level deeper, **reducing the result by one dimension at each step**.
@@ -518,7 +564,7 @@ print(array7[1, 1, 1])
 Final result: `33`
  
 ---
-
+ 
 ### Slice Indexing — `array7[1:, 0:1, :2]`
  
 A **slice** (`start:stop`) selects a range instead of a single element. Crucially, **slices preserve the dimension** — the axis stays in the output shape.
@@ -556,7 +602,7 @@ Block 2, Row 0, Elements 0–1:  [16, 26]
 Output shape: `(2, 1, 2)` — 2 blocks, 1 row each, 2 elements each.
  
 ---
-
+ 
 ### Mixing Exact Indices and Slices — `array7[1:, 1, 0]`
  
 You can freely mix slices and exact indices in the same expression.
@@ -601,10 +647,8 @@ A bare `:` means "all elements along this axis". It is used when you want to pre
 array7[:, 1, :]   # all blocks, row 1, all elements → shape (3, 4)
 array7[0, :, :]   # block 0, all rows, all elements → shape (2, 4)
 ```
-### Visualization
-![Indexing Visualization](Indexing_Visualization.jpg)
+ 
 ---
-
  
 ## 18. Special Array Creation Functions
  
@@ -628,12 +672,12 @@ Output:
  [0. 0.]]
 ```
  
-Shape `(3, 2)` gives 3 rows and 2 columns. The default dtype is `float64`, which is why the values display as `0.` rather than `0`.
+Shape `(3, 2)` gives 3 rows and 2 columns. The default dtype is `float64`, which is why values display as `0.` rather than `0`.
  
-**When to use:** Initialising an output array before filling it in a loop, or creating a blank "template" matrix of a known size.
+**When to use:** Initialising an output array before filling it in a loop, or creating a blank template matrix of a known size.
  
 ---
-
+ 
 ### 18.2 `np.ones()` — Array of All Ones
  
 Identical in behaviour to `np.zeros()`, but fills with `1.0` instead.
@@ -669,7 +713,7 @@ Output:
  [0. 0. 1.]]
 ```
  
-This is the matrix equivalent of the number `1` — multiplying any matrix by the identity matrix leaves it unchanged. The concept comes directly from linear algebra.
+This is the matrix equivalent of the number `1` — multiplying any matrix by the identity matrix leaves it unchanged.
  
 **When to use:** Linear algebra operations, setting up transformation matrices, or as a neutral starting point before adding off-diagonal values.
  
@@ -682,8 +726,8 @@ Generates random values sampled from a **uniform distribution** between `0.0` (i
 You pass the **shape as separate arguments** (not as a tuple):
  
 ```python
-print(np.random.rand(5))       # 1D array of 5 values
-print(np.random.rand(2, 3))    # 2D array, shape (2, 3)
+print(np.random.rand(5))
+print(np.random.rand(2, 3))
 ```
  
 Example output for `np.random.rand(5)`:
@@ -697,19 +741,19 @@ Example output for `np.random.rand(2, 3)`:
  [0.86617615 0.70807258 0.02058449]]
 ```
  
-Every value is between 0 and 1. The distribution is flat — no value is more likely than another.
+Every value is between 0 and 1 with a flat distribution — no value is more likely than another.
  
-**When to use:** Randomly initialising model weights, generating synthetic data for testing, or any situation where you need values spread evenly between 0 and 1.
+**When to use:** Randomly initialising model weights, generating synthetic data, or any situation where you need values spread evenly between 0 and 1.
  
 ---
  
 ### 18.5 `np.random.randn()` — Standard Normal Random Values
  
-Generates random values sampled from a **standard normal distribution** (also called a Gaussian distribution) — centred at `0` with a standard deviation of `1`.
+Generates random values sampled from a **standard normal (Gaussian) distribution** — centred at `0` with a standard deviation of `1`.
  
 ```python
-print(np.random.randn(5))      # 1D array of 5 values
-print(np.random.randn(2, 3))   # 2D array, shape (2, 3)
+print(np.random.randn(5))
+print(np.random.randn(2, 3))
 ```
  
 Example output for `np.random.randn(5)`:
@@ -723,9 +767,9 @@ Example output for `np.random.randn(2, 3)`:
  [-1.91328024 -1.72491783 -0.56228753]]
 ```
  
-Values cluster around `0`. Most values fall between `-3` and `3`, with values further from `0` becoming increasingly rare.
+Values cluster around `0`. Most fall between `-3` and `3`, with values further from `0` becoming increasingly rare.
  
-**When to use:** Initialising neural network weights (where values close to zero are preferred), simulating real-world noise, or any situation where a bell-curve distribution better models the data than a flat one.
+**When to use:** Initialising neural network weights, simulating real-world noise, or any bell-curve distributed data.
  
 ---
  
@@ -736,10 +780,9 @@ Values cluster around `0`. Most values fall between `-3` and `3`, with values fu
 | Distribution | Uniform | Normal (Gaussian) |
 | Range | Strictly `[0, 1)` | Unbounded (mostly `-3` to `3`) |
 | Centre | `0.5` | `0` |
-| Shape of argument | Separate ints: `rand(2, 3)` | Separate ints: `randn(2, 3)` |
 | Use case | Equal probability across a range | Bell-curve, clustered around zero |
  
-Both take the shape as **separate integer arguments**, not a tuple — unlike `np.zeros()` and `np.ones()` which take a tuple.
+Both take shape as **separate integer arguments**, not a tuple — unlike `np.zeros()` and `np.ones()`:
  
 ```python
 np.zeros((3, 2))      # ← tuple
@@ -762,15 +805,13 @@ Output:
  [4 4 4]]
 ```
  
-The first argument is the shape (as a list or tuple), and the second is the fill value.
- 
-**When to use:** Creating a mask of constant values, pre-filling an array with a default score, or anywhere you need every cell to start with the same number.
+**When to use:** Creating a mask of constant values, pre-filling an array with a default score, or anywhere every cell needs to start with the same number.
  
 ---
  
 ### 18.7 `np.arange()` — Range-Based Array
  
-Works like Python's built-in `range()`, but returns a NumPy array instead of a list. It takes three arguments: `start`, `stop` (exclusive), and `step`.
+Works like Python's built-in `range()`, but returns a NumPy array. Takes `start`, `stop` (exclusive), and `step`.
  
 ```python
 print(np.arange(10, 90, 3))
@@ -781,17 +822,15 @@ Output:
 [10 13 16 19 22 25 28 31 34 37 40 43 46 49 52 55 58 61 64 67 70 73 76 79 82 85 88]
 ```
  
-Starts at `10`, counts up in steps of `3`, stops before `90`.
- 
 #### Combining with `reshape()`
  
-`np.arange()` always produces a flat 1D array. You can immediately chain `.reshape()` to reorganise it into any shape — as long as the total number of elements stays the same.
+`np.arange()` always returns a flat 1D array. Chain `.reshape()` to reorganise it into any shape — as long as the total element count stays the same.
  
 ```python
 print(np.arange(10, 90, 3).reshape(3, 3, 3))
 ```
  
-`np.arange(10, 90, 3)` produces 27 elements. `reshape(3, 3, 3)` gives 3 × 3 × 3 = 27 — it fits exactly.
+`np.arange(10, 90, 3)` produces exactly 27 elements. `3 × 3 × 3 = 27` — it fits.
  
 Output:
 ```
@@ -810,22 +849,20 @@ Output:
  
 #### Using `-1` in reshape
  
-You can leave **one dimension** as `-1` and NumPy will calculate what it should be automatically:
+Leave one dimension as `-1` and NumPy calculates it automatically:
  
 ```python
 np.arange(10, 90, 3).reshape(3, 3, -1)
-# NumPy sees: 3 × 3 × ? = 27, so ? = 3
+# NumPy sees: 3 × 3 × ? = 27  →  ? = 3
 ```
  
-This is especially useful when you know most of the shape but want the code to stay correct even if the data size changes slightly.
- 
-> **Constraint:** Only one dimension can be `-1`. Using `-1` in more than one place is ambiguous and will raise an error.
+> **Constraint:** Only one dimension can be `-1`. Using it more than once is ambiguous and raises an error.
  
 ---
  
 ### 18.8 `np.linspace()` — Equally Spaced Values
  
-Instead of specifying a step size, `np.linspace()` lets you specify **how many values** you want and NumPy divides the range evenly to produce exactly that count.
+Instead of a step size, you specify **how many values** you want and NumPy divides the range evenly.
  
 ```python
 print(np.linspace(3, 27, 9))
@@ -836,23 +873,19 @@ Output:
 [ 3.  6.  9. 12. 15. 18. 21. 24. 27.]
 ```
  
-Arguments: `start=3`, `stop=27`, `num=9`. NumPy creates 9 values that are perfectly equally spaced from 3 to 27 — inclusive of both endpoints by default.
+Arguments: `start=3`, `stop=27`, `num=9`. The gap between each pair is `(27 − 3) / (9 − 1) = 3`. Both endpoints are included by default.
  
-The gap between each pair of adjacent values here is `(27 - 3) / (9 - 1) = 3`.
- 
-#### `arange` vs `linspace` — Which to Use?
+#### `arange` vs `linspace`
  
 | | `np.arange()` | `np.linspace()` |
 |---|---|---|
 | You control | The **step size** | The **number of values** |
-| Endpoint included? | No (stop is exclusive) | Yes (both ends included by default) |
-| Output dtype | Matches input (int or float) | Always `float64` |
-| Best when... | You know the step between values | You know how many points you need |
- 
-**Example:** If you need exactly 100 data points between 0 and 1 for a graph or simulation, `np.linspace(0, 1, 100)` is the natural choice. If you are stepping through indices or counts, `np.arange()` is simpler.
+| Endpoint included? | No (stop is exclusive) | Yes (both ends included) |
+| Output dtype | Matches input | Always `float64` |
+| Best when... | You know the step | You know how many points you need |
  
 ---
-
+ 
 ## 19. Downloading Files from the Web
  
 So far all our data has either been typed in manually or already sitting on disk. In real projects, data is usually hosted online. Python's built-in `urllib.request` module lets you download a file from any URL and save it directly to a local path — no third-party libraries needed.
@@ -878,7 +911,7 @@ The function makes an HTTP request, streams the response, and writes it to the p
 > **Windows paths and backslashes:** In Python, a backslash `\` inside a normal string is treated as the start of an escape sequence (e.g. `\n` means newline, `\t` means tab). To write a Windows path safely, prefix the string with `r` to make it a **raw string** — this tells Python to treat every backslash literally: `r"F:\Data-Science-Notes\Practice\climate_data.txt"`. Alternatively you can double every backslash: `"F:\\Data-Science-Notes\\Practice\\climate_data.txt"`. Both are equivalent.
  
 ---
-
+ 
 ## 20. Reading a File in Python
  
 Once a file is on disk you can open it and read its contents using Python's built-in `open()` function combined with a `with` block.
@@ -908,7 +941,7 @@ with open(r"F:\Data-Science-Notes\Practice\climate_data.txt") as f:
 Each element in `file_lines` still has a `\n` newline character at the end. To remove it, call `.strip()` on individual lines as you process them — not on the list itself (`.strip()` is a string method, not a list method).
  
 ---
-
+ 
 ## 21. Parsing CSV Data Manually
  
 `np.genfromtxt()` handles CSV loading automatically, but understanding how to parse a CSV by hand is important — it gives you full control and works in situations where NumPy is not available or where the data needs custom cleaning logic.
@@ -992,7 +1025,7 @@ create_dict(["Temperature_C", "Humidity_%", "Rainfall_mm"], [50.0, 90.0, 50.0])
 Working with dictionaries is much more readable than raw arrays — you access a value by name (`row["Temperature_C"]`) rather than by position (`row[0]`).
  
 ---
-
+ 
 ## 22. The Complete `read_csv()` Function
  
 The three helper functions above are combined into a single `read_csv()` function that reads an entire file and returns a **list of dictionaries** — one dictionary per data row.
@@ -1038,7 +1071,7 @@ print(data[0]["Temperature_C"])
 ```
  
 ---
-
+ 
 ## 23. The `write_csv()` Function
  
 The reverse of `read_csv()` — takes a list of dictionaries and writes them back to a CSV file.
@@ -1081,17 +1114,17 @@ write_csv(data, r"F:\Data-Science-Notes\Practice\climate_data_output.txt")
 > **Note:** `"w"` mode truncates (erases) the file before writing. If you want to **add** rows to an existing file without deleting what is already there, use `"a"` (append mode) instead.
  
 ---
-
-## 24. Os Module
  
-Python's built-in `os` module, gives you tools to work with the file system itself — not just the content of files.
+## 24. What the Instructor Means by `os`
+ 
+When your instructor mentions `os` alongside file reading, they are referring to Python's built-in `os` module, which gives you tools to work with the file system itself — not just the content of files.
  
 The most commonly used function in this context is `os.path.join()`, which builds file paths correctly for whatever operating system you are on:
  
 ```python
 import os
  
-base_dir = r"F:\\Data-Science-Notes\\Practice"
+base_dir = r"F:\Data-Science-Notes\Practice"
 filename = "climate_data.txt"
  
 full_path = os.path.join(base_dir, filename)
@@ -1133,5 +1166,3 @@ else:
 ```
  
 This pattern — check if the file exists before downloading — is very common in data science notebooks so you do not re-download large files every time you run the script.
- 
----
