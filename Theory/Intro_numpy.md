@@ -3,8 +3,9 @@
 ---
  
 ## Table of Contents
- 
+
 **NumPy Fundamentals**
+
 1. [The Problem — Predicting Crop Yield](#1-the-problem--predicting-crop-yield)
 2. [Manual Approach — Pure Python](#2-manual-approach--pure-python)
 3. [The Dot Product — Concept First](#3-the-dot-product--concept-first)
@@ -12,40 +13,45 @@
 5. [Benefits of NumPy Arrays](#5-benefits-of-numpy-arrays)
 6. [2D NumPy Arrays — Multiple Regions](#6-2d-numpy-arrays--multiple-regions)
 7. [Matrix Multiplication — Concept First](#7-matrix-multiplication--concept-first)
+
 **File I/O with NumPy**
+
 8. [Reading Data from a CSV File](#8-reading-data-from-a-csv-file)
 9. [Computing Yield from Loaded Data](#9-computing-yield-from-loaded-data)
 10. [reshape() — Concept First](#10-reshape--concept-first)
 11. [Concatenating Arrays — Attaching the Yield Column](#11-concatenating-arrays--attaching-the-yield-column)
 12. [Writing Data Back to a File](#12-writing-data-back-to-a-file)
 13. [Useful NumPy Functions Reference](#13-useful-numpy-functions-reference)
- 
+
 **Array Operations**
+
 14. [Arithmetic Operations](#14-arithmetic-operations)
 15. [Broadcasting — Concept First](#15-broadcasting--concept-first)
 16. [Comparison Operations](#16-comparison-operations)
 17. [Array Indexing and Slicing](#17-array-indexing-and-slicing)
- 
+
 **Creating Arrays**
+
 18. [Special Array Creation Functions](#18-special-array-creation-functions)
-  - [18.1 np.zeros()](#181-npzeros--array-of-all-zeros)
-  - [18.2 np.ones()](#182-npones--array-of-all-ones)
-  - [18.3 np.eye()](#183-npeye--identity-matrix)
-  - [18.4 np.random.rand()](#184-nprandomrand--uniform-random-values)
-  - [18.5 np.random.randn()](#185-nprandomrandn--standard-normal-random-values)
-  - [18.6 np.full()](#186-npfull--array-filled-with-a-specific-value)
-  - [18.7 np.arange()](#187-nparange--range-based-array)
-  - [18.8 np.linspace()](#188-nplinspace--equally-spaced-values)
+    - [18.1 np.zeros()](#181-npzeros--array-of-all-zeros)
+    - [18.2 np.ones()](#182-npones--array-of-all-ones)
+    - [18.3 np.eye()](#183-npeye--identity-matrix)
+    - [18.4 np.random.rand()](#184-nprandomrand--uniform-random-values)
+    - [18.5 np.random.randn()](#185-nprandomrandn--standard-normal-random-values)
+    - [18.6 np.full()](#186-npfull--array-filled-with-a-specific-value)
+    - [18.7 np.arange()](#187-nparange--range-based-array)
+    - [18.8 np.linspace()](#188-nplinspace--equally-spaced-values)
+
 **Python File I/O & CSV Parsing**
+
 19. [Downloading Files from the Web](#19-downloading-files-from-the-web)
 20. [Reading a File in Python](#20-reading-a-file-in-python)
 21. [Parsing CSV Data Manually](#21-parsing-csv-data-manually)
 22. [The Complete read_csv() Function](#22-the-complete-read_csv-function)
 23. [The write_csv() Function](#23-the-write_csv-function)
 24. [What the Instructor Means by os](#24-what-the-instructor-means-by-os)
- 
----
 
+---
 
 ## 1. The Problem — Predicting Crop Yield
  
