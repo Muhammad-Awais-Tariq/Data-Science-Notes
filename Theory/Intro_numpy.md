@@ -1038,3 +1038,46 @@ print(data[0]["Temperature_C"])
 ```
  
 ---
+
+## 23. The `write_csv()` Function
+ 
+The reverse of `read_csv()` — takes a list of dictionaries and writes them back to a CSV file.
+ 
+```python
+def write_csv(items, path):
+    with open(path, "w") as f:
+        if len(items) == 0:
+            return
+ 
+        headers = list(items[0].keys())
+        f.write(",".join(headers) + "\n")
+ 
+        for item in items:
+            values = []
+            for header in headers:
+                values.append(str(item.get(header, "")))
+            f.write(",".join(values) + "\n")
+```
+ 
+Walking through it step by step:
+ 
+| Line | What it does |
+|---|---|
+| `open(path, "w")` | Opens the file in write mode (`"w"`). Creates the file if it does not exist; overwrites it if it does |
+| `if len(items) == 0: return` | Guard clause — if the list is empty there is nothing to write, so we exit early |
+| `headers = list(items[0].keys())` | Extracts column names from the keys of the first dictionary. All rows are assumed to have the same keys |
+| `f.write(",".join(headers) + "\n")` | Joins the header list into a comma-separated string and writes it as the first line |
+| `item.get(header, "")` | Safely retrieves a value by key. If the key is missing for some reason, it falls back to an empty string rather than crashing |
+| `",".join(values) + "\n"` | Joins the values for one row into a comma-separated string and writes it |
+ 
+Usage:
+ 
+```python
+data = read_csv(r"F:\Data-Science-Notes\Practice\climate_data.txt")
+ 
+write_csv(data, r"F:\Data-Science-Notes\Practice\climate_data_output.txt")
+```
+ 
+> **Note:** `"w"` mode truncates (erases) the file before writing. If you want to **add** rows to an existing file without deleting what is already there, use `"a"` (append mode) instead.
+ 
+---
