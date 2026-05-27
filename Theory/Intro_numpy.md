@@ -908,3 +908,87 @@ with open(r"F:\Data-Science-Notes\Practice\climate_data.txt") as f:
 Each element in `file_lines` still has a `\n` newline character at the end. To remove it, call `.strip()` on individual lines as you process them — not on the list itself (`.strip()` is a string method, not a list method).
  
 ---
+
+## 22. Parsing CSV Data Manually
+ 
+`np.genfromtxt()` handles CSV loading automatically, but understanding how to parse a CSV by hand is important — it gives you full control and works in situations where NumPy is not available or where the data needs custom cleaning logic.
+ 
+A CSV file looks like this:
+ 
+```
+Temperature_C,Humidity_%,Rainfall_mm
+50.0,90.0,50.0
+42.0,65.0,70.0
+```
+ 
+The first line is the **header** — it names the columns. Every line after it is a **data row**.
+ 
+### Step 1 — Parsing the Header
+ 
+```python
+def parse_header(header_line):
+    return header_line.strip().split(",")
+```
+ 
+`.strip()` removes any leading/trailing whitespace and the newline character. `.split(",")` breaks the string on every comma and returns a list of column names:
+ 
+```python
+parse_header("Temperature_C,Humidity_%,Rainfall_mm\n")
+# → ["Temperature_C", "Humidity_%", "Rainfall_mm"]
+```
+ 
+Usage — the header is always the first line, so we pass `file_lines[0]`:
+ 
+```python
+with open(r"F:\Data-Science-Notes\Practice\climate_data.txt") as f:
+    file_lines = f.readlines()
+ 
+headers = parse_header(file_lines[0])
+```
+ 
+### Step 2 — Parsing a Data Line
+ 
+```python
+def parse_values(data_line):
+    values = []
+    for item in data_line.strip().split(","):
+        if item.strip() == "":
+            values.append(0.0)
+        else:
+            values.append(float(item))
+    return values
+```
+ 
+For each line, this function:
+1. Strips whitespace and splits on commas — same as the header
+2. Checks if a cell is **empty** (a missing value in a CSV appears as two consecutive commas, leaving an empty string after splitting)
+3. If it is empty, substitutes `0.0` as a safe default
+4. Otherwise, converts the string to a `float`
+```python
+parse_values("50.0,90.0,50.0\n")
+# → [50.0, 90.0, 50.0]
+ 
+parse_values("42.0,,70.0\n")
+# → [42.0, 0.0, 70.0]   ← missing value replaced with 0.0
+```
+ 
+### Step 3 — Combining into a Dictionary
+ 
+```python
+def create_dict(headers, values):
+    result = {}
+    for header, value in zip(headers, values):
+        result[header] = value
+    return result
+```
+ 
+`zip(headers, values)` pairs each column name with its corresponding value. The result is a dictionary where keys are column names and values are the numbers from that row:
+ 
+```python
+create_dict(["Temperature_C", "Humidity_%", "Rainfall_mm"], [50.0, 90.0, 50.0])
+# → {"Temperature_C": 50.0, "Humidity_%": 90.0, "Rainfall_mm": 50.0}
+```
+ 
+Working with dictionaries is much more readable than raw arrays — you access a value by name (`row["Temperature_C"]`) rather than by position (`row[0]`).
+ 
+---
