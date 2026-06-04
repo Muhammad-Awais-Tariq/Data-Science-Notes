@@ -27,6 +27,7 @@
 
 14. [Arithmetic Operations](#14-arithmetic-operations)
 15. [Broadcasting — Concept First](#15-broadcasting--concept-first)
+15.1 [Understanding Axis in NumPy Arrays](#151-understanding-axis-in-numpy-arrays)
 16. [Comparison Operations](#16-comparison-operations)
 17. [Array Indexing and Slicing](#17-array-indexing-and-slicing)
 
@@ -470,7 +471,274 @@ No matter how many times NumPy replicates `array4`, it will never produce a shap
 > **Rule of thumb:** Broadcasting works when the trailing dimensions either match or one of them is 1. If neither is the case, you will get an error.
  
 ---
- 
+
+## 15.1 Understanding Axis in NumPy Arrays
+
+The `axis` parameter controls **which dimension** an operation works along. When you use `axis`, NumPy collapses that dimension and returns a result with one fewer dimension.
+
+### Axis in 2D Arrays
+
+For a 2D array, you have two axes:
+- **`axis=0`** — operates along the **rows** (vertically, top to bottom). Collapses the rows, keeps columns.
+- **`axis=1`** — operates along the **columns** (horizontally, left to right). Collapses the columns, keeps rows.
+
+#### 2D Array Example
+
+```python
+array_2d = np.array([
+    [1, 2, 3],
+    [4, 5, 6],
+    [7, 8, 9]
+])
+
+print(array_2d.shape)  # (3, 3)
+```
+
+Visual representation:
+```
+     col0  col1  col2
+row0 [ 1    2    3  ]
+row1 [ 4    5    6  ]
+row2 [ 7    8    9  ]
+```
+
+**Using `axis=0` — sum down each column:**
+
+```python
+result = np.sum(array_2d, axis=0)
+print(result)  # [12, 15, 18]
+```
+
+Breaking it down:
+- Column 0: 1 + 4 + 7 = 12
+- Column 1: 2 + 5 + 8 = 15
+- Column 2: 3 + 6 + 9 = 18
+
+Result shape: `(3,)` — one value per column.
+
+**Using `axis=1` — sum across each row:**
+
+```python
+result = np.sum(array_2d, axis=1)
+print(result)  # [6, 15, 24]
+```
+
+Breaking it down:
+- Row 0: 1 + 2 + 3 = 6
+- Row 1: 4 + 5 + 6 = 15
+- Row 2: 7 + 8 + 9 = 24
+
+Result shape: `(3,)` — one value per row.
+
+**No axis — sum all elements:**
+
+```python
+result = np.sum(array_2d)
+print(result)  # 45
+```
+
+All elements are summed into a single scalar.
+
+---
+
+### Axis in 3D Arrays
+
+For a 3D array with shape `(2, 3, 4)`, you have three axes:
+- **`axis=0`** — operates along the **first dimension** (stacks of matrices). Combines the 2 matrices together.
+- **`axis=1`** — operates along the **rows** (second dimension). Collapses rows within each matrix.
+- **`axis=2`** — operates along the **columns** (third dimension). Collapses columns within each matrix.
+
+#### 3D Array Example
+
+```python
+array_3d = np.array([
+    [[1, 2],
+     [3, 4]],
+    
+    [[5, 6],
+     [7, 8]]
+])
+
+print(array_3d.shape)  # (2, 2, 2)
+```
+
+Visual representation:
+```
+Matrix 0:        Matrix 1:
+[1, 2]           [5, 6]
+[3, 4]           [7, 8]
+```
+
+**Using `axis=0` — sum across matrices:**
+
+```python
+result = np.sum(array_3d, axis=0)
+print(result)
+# [[6, 8],
+#  [10, 12]]
+```
+
+Breaking it down (element-by-element):
+- Position [0,0]: 1 + 5 = 6
+- Position [0,1]: 2 + 6 = 8
+- Position [1,0]: 3 + 7 = 10
+- Position [1,1]: 4 + 8 = 12
+
+Result shape: `(2, 2)` — the two matrices are combined into one.
+
+**Using `axis=1` — sum down rows in each matrix:**
+
+```python
+result = np.sum(array_3d, axis=1)
+print(result)
+# [[4, 6],
+#  [12, 14]]
+```
+
+Breaking it down by matrix:
+- Matrix 0, Column 0: 1 + 3 = 4
+- Matrix 0, Column 1: 2 + 4 = 6
+- Matrix 1, Column 0: 5 + 7 = 12
+- Matrix 1, Column 1: 6 + 8 = 14
+
+Result shape: `(2, 2)` — rows collapsed within each matrix.
+
+**Using `axis=2` — sum across columns in each row:**
+
+```python
+result = np.sum(array_3d, axis=2)
+print(result)
+# [[3, 7],
+#  [11, 15]]
+```
+
+Breaking it down by matrix:
+- Matrix 0, Row 0: 1 + 2 = 3
+- Matrix 0, Row 1: 3 + 4 = 7
+- Matrix 1, Row 0: 5 + 6 = 11
+- Matrix 1, Row 1: 7 + 8 = 15
+
+Result shape: `(2, 2)` — columns collapsed within each row of each matrix.
+
+---
+
+### Axis in 4D Arrays
+
+For a 4D array with shape `(2, 2, 2, 2)`, you have four axes:
+- **`axis=0`** — operates along the **first dimension**. Combines different 3D arrays.
+- **`axis=1`** — operates along the **second dimension**. Combines different 2D arrays within 3D arrays.
+- **`axis=2`** — operates along the **rows** (third dimension). Sums rows within 2D arrays.
+- **`axis=3`** — operates along the **columns** (fourth dimension). Sums columns within rows.
+
+#### 4D Array Example
+
+```python
+array_4d = np.arange(16).reshape(2, 2, 2, 2)
+print(array_4d.shape)  # (2, 2, 2, 2)
+
+print(array_4d)
+# [[[[ 0  1]   ← 3D array 0
+#    [ 2  3]]
+#   
+#   [[ 4  5]
+#    [ 6  7]]]
+#
+#  [[[ 8  9]   ← 3D array 1
+#    [10 11]]
+#   
+#   [[12 13]
+#    [14 15]]]]
+```
+
+**Using `axis=0` — sum across the two 3D arrays:**
+
+```python
+result = np.sum(array_4d, axis=0)
+print(result.shape)  # (2, 2, 2)
+
+print(result)
+# [[[8, 10],
+#   [12, 14]],
+#
+#  [[16, 18],
+#   [20, 22]]]
+```
+
+Each position combines values from both 3D arrays:
+- [0,0,0]: 0 + 8 = 8
+- [0,0,1]: 1 + 9 = 10
+- [0,1,0]: 2 + 10 = 12
+- And so on...
+
+**Using `axis=1` — sum across different 2D arrays within each 3D array:**
+
+```python
+result = np.sum(array_4d, axis=1)
+print(result.shape)  # (2, 2, 2)
+
+print(result)
+# [[[4, 6],
+#   [8, 10]],
+#
+#  [[20, 22],
+#   [24, 26]]]
+```
+
+For 3D array 0, we combine its two 2D arrays:
+- [0, 0]: [0, 1] + [4, 5] = [4, 6]
+- [1, 0]: [2, 3] + [6, 7] = [8, 10]
+
+**Using `axis=2` — sum rows within each 2D array:**
+
+```python
+result = np.sum(array_4d, axis=2)
+print(result.shape)  # (2, 2, 2)
+
+print(result)
+# [[[2, 4],
+#   [8, 12]],
+#
+#  [[18, 20],
+#   [26, 28]]]
+```
+
+For the first element in 3D array 0: [[0, 1], [2, 3]], summing rows:
+- Column 0: 0 + 2 = 2
+- Column 1: 1 + 3 = 4
+
+**Using `axis=3` — sum columns within each row:**
+
+```python
+result = np.sum(array_4d, axis=3)
+print(result.shape)  # (2, 2, 2)
+
+print(result)
+# [[[1, 5],
+#   [9, 13]],
+#
+#  [[17, 21],
+#   [25, 29]]]
+```
+
+For the first 2D array [[0, 1], [2, 3]], summing columns:
+- Row 0: 0 + 1 = 1
+- Row 1: 2 + 3 = 5
+
+---
+
+### Key Takeaway — The Axis Rule
+
+> **When you use `axis=n`, NumPy removes that dimension and performs the operation along it.**
+
+| Array Dimension | axis=0 | axis=1 | axis=2 | axis=3 |
+|---|---|---|---|---|
+| 1D | Scalar | — | — | — |
+| 2D | Columns (3,) | Rows (3,) | — | — |
+| 3D | Combine matrices | Sum rows | Sum columns | — |
+| 4D | Combine 3D arrays | Combine 2D arrays | Sum rows | Sum columns |
+
+---
+
 ## 16. Comparison Operations
  
 Just like arithmetic, NumPy supports comparison operators applied **element-by-element** across arrays. The result is a **boolean array** of the same shape — each position holds `True` or `False` depending on whether the condition was met at that position.
