@@ -48,3 +48,27 @@ print(total_tests_complete)
 
 positive_rate = total_cases / total_tests_complete
 print(positive_rate)
+
+high_new_cases = covid_df.new_cases > 1000
+print(high_new_cases) 
+
+filtered_df = covid_df[high_new_cases]
+print(filtered_df)  
+
+high_new_cases_df = covid_df[covid_df.new_cases > 1000]
+
+# from ipython.display import display
+ 
+# with pd.option_context('display.max_rows', 100):
+#     display(covid_df[covid_df.new_cases > 1000])
+
+positive_rate_avg = covid_df.new_cases.sum() / covid_df.new_tests.sum()
+high_ratio_df = covid_df[covid_df.new_cases / covid_df.new_tests > positive_rate_avg]
+
+covid_df['positive_rate'] = covid_df.new_cases / covid_df.new_tests
+
+covid_df.drop(columns=['positive_rate'], inplace=True)
+
+covid_df[(covid_df.new_cases > 1000) & (covid_df.new_deaths > 50)]
+
+covid_df[(covid_df.new_cases > 1000) | (covid_df.new_deaths > 50)]
