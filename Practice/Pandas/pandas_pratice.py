@@ -32,3 +32,19 @@ print(covid_df.loc[108:113])
 print(covid_df.new_tests.first_valid_index())  
 
 print(covid_df.sample(10)) 
+
+total_cases = covid_df.new_cases.sum()
+total_deaths = covid_df.new_deaths.sum()
+
+print(total_cases)
+print(total_deaths)
+
+death_rate = total_deaths / total_cases
+print(death_rate)
+
+initial_tests = 935310
+total_tests_complete = initial_tests + covid_df.new_tests.sum()
+print(total_tests_complete)
+
+positive_rate = total_cases / total_tests_complete
+print(positive_rate)
