@@ -528,3 +528,90 @@ covid_df[(covid_df.new_cases > 1000) | (covid_df.new_deaths > 50)]
 | `.drop(columns=[...])` | Remove columns | `covid_df.drop(columns=['col1'], inplace=True)` | Column removed |
 | `&` (AND operator) | Multiple conditions (both) | `(df['col1'] > 100) & (df['col2'] < 50)` | Combined filter |
 | `\|` (OR operator) | Multiple conditions (either) | `(df['col1'] > 100) \| (df['col2'] < 50)` | Combined filter |
+
+## Sorting Data and Handling Faulty Values
+ 
+### Basic Sorting with sort_values()
+ 
+Sorting is a fundamental operation when working with data. The `.sort_values()` method allows you to order DataFrame rows based on the values in one or more columns. This is useful for ranking data, finding extremes (highest/lowest values), or organizing data for presentation.
+ 
+The method returns a new DataFrame with rows sorted according to your specification. The original DataFrame remains unchanged unless you use the `inplace=True` parameter.
+ 
+### Ascending vs Descending Order
+ 
+By default, `.sort_values()` sorts in ascending order (smallest to largest). To reverse this and sort in descending order (largest to smallest), use the `ascending=False` parameter.
+ 
+For example, to find the 10 days with the highest number of cases, you would sort by the `new_cases` column in descending order and then use `.head(10)` to get the top 10 rows.
+ 
+### Identifying Faulty Data
+ 
+When working with real-world data, you'll often encounter errors or anomalies. These can occur due to data entry mistakes, sensor errors, or system glitches. It's crucial to identify these faulty values before analysis.
+ 
+For example, in a COVID dataset tracking daily cases, negative values would be physically impossible—cases cannot decrease below zero. Such values indicate an error that needs to be corrected.
+ 
+### Approaches to Handle Faulty Data
+ 
+When you discover faulty values, you have several options for how to handle them:
+ 
+1. **Replace with 0** - Assume the faulty entry should be zero
+2. **Replace with Column Average** - Use the mean of all values in that column
+3. **Replace with Adjacent Average** - Use the average of the previous and next values (useful for time-series data)
+4. **Drop the Row** - Remove the entire row if the data is unreliable
+Each approach has trade-offs:
+- **Zero replacement** is simple but may distort analysis
+- **Column average** preserves overall statistics but may not be contextually appropriate
+- **Adjacent average** works well for time-series data where values change gradually
+- **Dropping rows** removes the faulty data completely but may lose other valid information in that row
+The best approach depends on your data and analysis goals.
+ 
+### Practical Examples
+ 
+Here are common sorting and data cleaning operations:
+ 
+```python
+# Basic sorting - ascending order (default)
+sorted_df = covid_df.sort_values('new_cases')
+ 
+# Sorting in descending order - find highest values
+sorted_df = covid_df.sort_values('new_cases', ascending=False)
+ 
+# Find the 10 days with highest number of cases
+top_10_cases = covid_df.sort_values('new_cases', ascending=False).head(10)
+ 
+# Sort by multiple columns
+sorted_df = covid_df.sort_values(['new_cases', 'new_deaths'], ascending=False)
+ 
+# Identify faulty data
+# For example, negative cases (which should never occur)
+faulty_rows = covid_df[covid_df.new_cases < 0]
+ 
+# Approach 1: Replace faulty value with 0
+covid_df.at[172, 'new_cases'] = 0
+ 
+# Approach 2: Replace with column average
+column_average = covid_df.new_cases.mean()
+covid_df.at[172, 'new_cases'] = column_average
+ 
+# Approach 3: Replace with average of adjacent values (previous and next)
+covid_df.at[172, 'new_cases'] = (covid_df.at[171, 'new_cases'] + covid_df.at[173, 'new_cases']) / 2
+ 
+# Approach 4: Drop the entire row
+covid_df.drop(172, inplace=True)
+ 
+# Sort after cleaning to see results
+covid_df.sort_values('new_cases', ascending=False).head(10)
+```
+ 
+### Quick Reference Table
+ 
+| Operation | Purpose | Example | Result |
+|-----------|---------|---------|--------|
+| `.sort_values('col')` | Sort by column ascending | `covid_df.sort_values('new_cases')` | Sorted DataFrame |
+| `.sort_values('col', ascending=False)` | Sort by column descending | `covid_df.sort_values('new_cases', ascending=False)` | Sorted DataFrame (high to low) |
+| `.sort_values([...])` | Sort by multiple columns | `covid_df.sort_values(['col1', 'col2'])` | Sorted by col1, then col2 |
+| `.head(n)` + sort | Get top n rows | `covid_df.sort_values('col', ascending=False).head(10)` | Top 10 rows |
+| `.tail(n)` + sort | Get bottom n rows | `covid_df.sort_values('col').tail(5)` | Bottom 5 rows |
+| `df[df['col'] < 0]` | Find faulty values | `covid_df[covid_df.new_cases < 0]` | Rows with negative cases |
+| `.at[row, 'col'] = value` | Replace single value | `covid_df.at[172, 'new_cases'] = 0` | Value replaced |
+| `.mean()` | Calculate column average | `covid_df.new_cases.mean()` | Scalar (average value) |
+| `.drop(row)` | Remove row | `covid_df.drop(172, inplace=True)` | Row removed |
