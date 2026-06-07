@@ -10,6 +10,7 @@
 7. [Benefits of DataFrame Structure](#benefits-of-dataframe-structure)
 8. [Accessing and Indexing DataFrame Values](#accessing-and-indexing-dataframe-values)
 9. [Analyzing Data from a DataFrame](#analyzing-data-from-a-dataframe)
+10. [Querying and Filtering Data](#querying-and-filtering-data)
 
 ---
 
@@ -441,3 +442,89 @@ positive_rate = total_cases / total_tests_complete
 | `.sum()` | Sum all values in a column | `covid_df.new_cases.sum()` | Scalar (int/float) |
 | `/` (Division) | Calculate ratio or rate | `total_deaths / total_cases` | Scalar (float) |
 | `+` (Addition) | Add values together | `initial_value + series.sum()` | Scalar (int/float) |
+
+## Querying and Filtering Data
+ 
+### Basic Boolean Querying
+ 
+One of the most powerful features in pandas is the ability to query data using conditional statements. Boolean querying allows you to filter rows based on specific conditions.
+ 
+When you create a query like `covid_df.new_cases > 1000`, pandas returns a new Series with the same length as the original DataFrame, but instead of containing the data values, it contains **True** or **False** values depending on whether each row satisfies the condition.
+ 
+### Using Boolean Series as Filters
+ 
+Once you have a boolean Series (True/False values), you can use it to filter the original DataFrame. When you pass a boolean Series as an index to a DataFrame, pandas returns only the rows where the Series contains **True**, giving you the complete row data for those matches.
+ 
+### Inline Querying
+ 
+Instead of creating a separate variable for the boolean Series, you can write the condition directly inline. This is more concise and readable, and produces the same result as creating an intermediate variable.
+ 
+### Displaying More Rows
+ 
+By default, pandas displays only the first and last 5 rows of large DataFrames, with `...` in between. If you want to display more or all rows, you can use the `pd.option_context()` function with the `display_max_rows` parameter. You'll need to import `display` from `IPython`.
+ 
+### Complex Queries with Multiple Columns
+ 
+You can create more sophisticated queries by combining conditions from multiple columns. For example, you can calculate a ratio between two columns and use that in your query condition. This allows you to find rows that meet complex criteria.
+ 
+### Adding New Columns
+ 
+In addition to querying existing columns, you can add new calculated columns to your DataFrame. Simply assign a Series (which can be a calculation involving existing columns) to a new column name using bracket notation.
+ 
+### Dropping Columns
+ 
+If you no longer need certain columns, you can remove them using the `.drop()` method. The `inplace=True` parameter tells pandas to modify the original DataFrame directly instead of creating a copy.
+ 
+### Practical Examples
+ 
+Here are common querying and filtering operations:
+ 
+```python
+# Basic boolean query - returns True/False Series
+high_new_cases = covid_df.new_cases > 1000
+print(high_new_cases)  # Series of True/False values
+ 
+# Use boolean Series to filter the DataFrame
+filtered_df = covid_df[high_new_cases]
+print(filtered_df)  # Only rows where new_cases > 1000
+ 
+# Inline querying - write condition directly
+high_new_cases_df = covid_df[covid_df.new_cases > 1000]
+ 
+# Display more rows than default (first 5 + last 5)
+from ipython.display import display
+import pandas as pd
+ 
+with pd.option_context('display.max_rows', 100):
+    display(covid_df[covid_df.new_cases > 1000])
+ 
+# Complex query with multiple columns
+# Find days where positive rate was higher than average
+positive_rate_avg = covid_df.new_cases.sum() / covid_df.new_tests.sum()
+high_ratio_df = covid_df[covid_df.new_cases / covid_df.new_tests > positive_rate_avg]
+ 
+# Add a new column with calculated values
+covid_df['positive_rate'] = covid_df.new_cases / covid_df.new_tests
+ 
+# Drop a column from the DataFrame
+covid_df.drop(columns=['positive_rate'], inplace=True)
+ 
+# Multiple conditions - rows meeting both criteria
+covid_df[(covid_df.new_cases > 1000) & (covid_df.new_deaths > 50)]
+ 
+# Multiple conditions - rows meeting either criteria
+covid_df[(covid_df.new_cases > 1000) | (covid_df.new_deaths > 50)]
+```
+ 
+### Quick Reference Table
+ 
+| Operation | Purpose | Example | Result |
+|-----------|---------|---------|--------|
+| `df['col'] > value` | Create boolean filter | `covid_df.new_cases > 1000` | Series of True/False |
+| `df[boolean_series]` | Filter rows where True | `covid_df[high_new_cases]` | Filtered DataFrame |
+| `df[df['col'] > value]` | Inline filtering | `covid_df[covid_df.new_cases > 1000]` | Filtered DataFrame |
+| `pd.option_context()` | Temporarily change display settings | `pd.option_context('display.max_rows', 100)` | Context manager |
+| `df['new_col'] = calc` | Add calculated column | `covid_df['rate'] = covid_df.new_cases / covid_df.new_tests` | New column added |
+| `.drop(columns=[...])` | Remove columns | `covid_df.drop(columns=['col1'], inplace=True)` | Column removed |
+| `&` (AND operator) | Multiple conditions (both) | `(df['col1'] > 100) & (df['col2'] < 50)` | Combined filter |
+| `\|` (OR operator) | Multiple conditions (either) | `(df['col1'] > 100) \| (df['col2'] < 50)` | Combined filter |
