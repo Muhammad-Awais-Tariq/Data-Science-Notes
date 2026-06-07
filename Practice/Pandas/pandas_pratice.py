@@ -72,3 +72,24 @@ covid_df.drop(columns=['positive_rate'], inplace=True)
 covid_df[(covid_df.new_cases > 1000) & (covid_df.new_deaths > 50)]
 
 covid_df[(covid_df.new_cases > 1000) | (covid_df.new_deaths > 50)]
+
+sorted_df = covid_df.sort_values('new_cases')
+
+sorted_df = covid_df.sort_values('new_cases', ascending=False)
+
+top_10_cases = covid_df.sort_values('new_cases', ascending=False).head(10)
+
+sorted_df = covid_df.sort_values(['new_cases', 'new_deaths'], ascending=False)
+
+faulty_rows = covid_df[covid_df.new_cases < 0]
+
+covid_df.at[172, 'new_cases'] = 0
+
+column_average = covid_df.new_cases.mean()
+covid_df.at[172, 'new_cases'] = column_average
+
+covid_df.at[172, 'new_cases'] = (covid_df.at[171, 'new_cases'] + covid_df.at[173, 'new_cases']) / 2
+
+covid_df.drop(172, inplace=True)
+
+covid_df.sort_values('new_cases', ascending=False).head(10)
