@@ -13,6 +13,7 @@
 10. [Querying and Filtering Data](#querying-and-filtering-data)
 11. [Sorting Data and Handling Faulty Values](#sorting-data-and-handling-faulty-values)
 12. [Working with Dates](#working-with-dates)
+13. [Grouping and Aggregation](#working-with-dates)
 
 ---
 
@@ -755,3 +756,86 @@ sunday_mean  = covid_df[covid_df.weekday == 6].new_cases.mean()
 | `df[df.month == n]` | Filter by month | `covid_df[covid_df.month == 5]` | Filtered DataFrame |
 | `df[df.weekday == n]` | Filter by weekday | `covid_df[covid_df.weekday == 6]` | Sundays only |
 | `.mean()` | Average of a column | `covid_df.new_cases.mean()` | Scalar (float) |
+
+## Grouping and Aggregation
+
+### Why Group Data?
+
+Instead of analyzing the entire dataset at once, grouping lets you split data into logical buckets — by month, weekday, year, or any other column — and then apply aggregation functions like sum or mean to each group separately.
+
+### Basic Grouping with groupby()
+
+Use `.groupby()` to group rows by a column, then select the columns you want and apply an aggregation:
+
+```python
+covid_month_df = covid_df.groupby('month')[['new_cases', 'new_deaths', 'new_tests']].sum()
+```
+
+This returns a new DataFrame with 12 rows (one per month), where each row contains the **total** cases, deaths, and tests for that month.
+
+### Using Different Aggregations
+
+Instead of `.sum()`, you can swap in any aggregation function depending on what you need:
+
+```python
+# Total per month
+covid_df.groupby('month')[['new_cases', 'new_deaths', 'new_tests']].sum()
+
+# Average per month
+covid_df.groupby('month')[['new_cases', 'new_deaths', 'new_tests']].mean()
+
+# Max value recorded in each month
+covid_df.groupby('month')[['new_cases', 'new_deaths', 'new_tests']].max()
+
+# Group by weekday instead of month
+covid_df.groupby('weekday')[['new_cases', 'new_deaths', 'new_tests']].mean()
+```
+
+### Cumulative Sum with cumsum()
+
+While `.sum()` gives you a single total, `.cumsum()` (cumulative sum) gives you a **running total** — for each row, it shows the sum of all values up to and including that row. This is useful for tracking how a metric has grown over time.
+
+```python
+covid_df["total_cases"] = covid_df.new_cases.cumsum()
+```
+
+**Example — what cumsum produces:**
+
+| day | new_cases | total_cases (cumsum) |
+|-----|-----------|----------------------|
+| 1   | 100       | 100                  |
+| 2   | 250       | 350                  |
+| 3   | 180       | 530                  |
+| 4   | 310       | 840                  |
+
+Each value in `total_cases` is the sum of all `new_cases` from day 1 up to that row.
+
+### Practical Examples
+
+```python
+# Group by month — total cases, deaths, tests per month
+covid_month_df = covid_df.groupby('month')[['new_cases', 'new_deaths', 'new_tests']].sum()
+
+# Group by month — average daily cases per month
+covid_month_avg = covid_df.groupby('month')[['new_cases', 'new_deaths', 'new_tests']].mean()
+
+# Group by weekday — see which day of week had highest avg cases
+covid_weekday_df = covid_df.groupby('weekday')[['new_cases', 'new_deaths']].mean()
+
+# Cumulative sum — running total of cases over time
+covid_df["total_cases"] = covid_df.new_cases.cumsum()
+
+# Cumulative sum for multiple columns
+covid_df["total_deaths"] = covid_df.new_deaths.cumsum()
+covid_df["total_tests"]  = covid_df.new_tests.cumsum()
+```
+
+### Quick Reference Table
+
+| Operation | Purpose | Example | Result |
+|-----------|---------|---------|--------|
+| `.groupby('col')` | Group rows by a column | `covid_df.groupby('month')` | GroupBy object |
+| `.groupby()[cols].sum()` | Total per group | `covid_df.groupby('month')[['new_cases']].sum()` | DataFrame with totals |
+| `.groupby()[cols].mean()` | Average per group | `covid_df.groupby('month')[['new_cases']].mean()` | DataFrame with averages |
+| `.groupby()[cols].max()` | Max value per group | `covid_df.groupby('month')[['new_cases']].max()` | DataFrame with max values |
+| `.cumsum()` | Running total over rows | `covid_df.new_cases.cumsum()` | Series with cumulative sum |
