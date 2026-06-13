@@ -93,3 +93,24 @@ covid_df.at[172, 'new_cases'] = (covid_df.at[171, 'new_cases'] + covid_df.at[173
 covid_df.drop(172, inplace=True)
 
 covid_df.sort_values('new_cases', ascending=False).head(10)
+
+print(covid_df.date)         
+print(covid_df.date.dtype)   
+
+covid_df["date"] = pd.to_datetime(covid_df.date)
+
+covid_df["year"]    = pd.DatetimeIndex(covid_df.date).year
+covid_df["month"]   = pd.DatetimeIndex(covid_df.date).month
+covid_df["day"]     = pd.DatetimeIndex(covid_df.date).day
+covid_df["weekday"] = pd.DatetimeIndex(covid_df.date).weekday
+
+covid_df_may = covid_df[covid_df.month == 5]
+
+covid_df_2020 = covid_df[covid_df.year == 2020]
+
+covid_df_sundays = covid_df[covid_df.weekday == 6]
+
+covid_df_may_total = covid_df[covid_df.month == 5][['new_cases', 'new_deaths', 'new_tests']].sum()
+
+overall_mean = covid_df.new_cases.mean()
+sunday_mean  = covid_df[covid_df.weekday == 6].new_cases.mean()
