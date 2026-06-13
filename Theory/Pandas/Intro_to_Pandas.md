@@ -13,10 +13,10 @@
 10. [Querying and Filtering Data](#querying-and-filtering-data)
 11. [Sorting Data and Handling Faulty Values](#sorting-data-and-handling-faulty-values)
 12. [Working with Dates](#working-with-dates)
-13. [Grouping and Aggregation](#working-with-dates)
+13. [Grouping and Aggregation](#grouping-and-aggregation)
 14. [Merging Different DataFrames](#merging-different-dataframes)
 15. [Writing Data Back to Files](#writing-data-back-to-files)
-
+16. [Basic Plotting in Pandas](#basic-plotting-in-pandas)
 
 ---
 
@@ -232,7 +232,7 @@ covid_df.loc[0, 'new_cases']  # Returns 1500 (first row, new_cases column)
 
 Representing data as a dictionary of lists provides several key benefits:
 
-### 1. **Efficient Storage for Same Data Types**
+### 1. Efficient Storage for Same Data Types
 
 Since all values in a column typically store data of the same type, it's efficient to store them as arrays.
 
@@ -244,9 +244,9 @@ covid_df['date']       # All strings/dates
 
 **Benefit:** Arrays of the same type use less memory and are faster to process.
 
-### 2. **Simple Row Value Retrieval**
+### 2. Simple Row Value Retrieval
 
-Retrieving the value of a given row is simple—you just provide the index of that row to the column to extract the data.
+Retrieving the value of a given row is simple — you just provide the index of that row to the column to extract the data.
 
 ```python
 # Get new_cases for row 2
@@ -256,19 +256,19 @@ cases_row_2 = covid_df.loc[2, 'new_cases']  # Returns 1385
 row_2_data = covid_df.loc[2]
 ```
 
-### 3. **Compact Representation**
+### 3. Compact Representation
 
 This representation is more compact compared to alternatives. For example:
 
-| Format | Structure | Example | Space Used |
-|--------|-----------|---------|-----------|
-| **Dictionary of Lists** (pandas) | `{'col1': [val1, val2], 'col2': [val3, val4]}` | Efficient - column names stored once | ✅ Minimal |
-| **List of Dictionaries** | `[{'col1': val1, 'col2': val3}, {'col1': val2, 'col2': val4}]` | Column names repeated for each row | ❌ More space |
+| Format | Structure | Space Used |
+|--------|-----------|-----------|
+| **Dictionary of Lists** (pandas) | Column names stored once, values in arrays | ✅ Minimal |
+| **List of Dictionaries** | Column names repeated for every single row | ❌ More space |
 
 **Why List of Dictionaries is Less Efficient:**
 
 ```python
-# Less efficient approach - column names repeated
+# Less efficient approach - column names repeated for every row
 covid_list_dicts = [
     {'date': '2023-01-01', 'new_cases': 1500, 'new_deaths': 45, 'new_tests': 50000},
     {'date': '2023-01-02', 'new_cases': 1620, 'new_deaths': 52, 'new_tests': 52000},
@@ -322,43 +322,41 @@ When pandas encounters missing data in your DataFrame, it represents it as **NaN
 
 ```python
 # Access an entire column - returns a Series
-print(covid_df['new_cases'])  # Returns all values in the new_cases column
+print(covid_df['new_cases'])
 
 # Check the type of a column
 print(type(covid_df['new_cases']))  # Output: <class 'pandas.core.series.Series'>
 
 # Access a specific value using bracket notation (less convenient)
-print(covid_df['new_cases'][246])  # Value at row 246 in new_cases column
+print(covid_df['new_cases'][246])  # Value at row 246
 
-# Access a specific value using the .at[] method (recommended)
-print(covid_df.at[241, 'new_cases'])  # First parameter is row, second is column
-# Note: .at[] only works for column names without spaces or special characters
+# Access a specific value using .at[] (recommended)
+print(covid_df.at[241, 'new_cases'])  # Row first, column second
 
-# Access a column using dot notation (if column name has no spaces/special chars)
+# Access a column using dot notation
 print(covid_df.new_cases)  # Same as covid_df['new_cases']
 
-# Access multiple columns (returns a DataFrame subset)
-print(covid_df[['new_cases', 'date']])  # Returns a DataFrame with 2 columns
-# Note: This is a view of the original, so changes affect the original DataFrame
+# Access multiple columns - returns a DataFrame
+print(covid_df[['new_cases', 'date']])
 
-# Create an independent copy if you need to modify without affecting original
+# Create an independent copy to avoid modifying the original
 subset = covid_df[['new_cases', 'date']].copy()
 
 # Access a specific row - returns a Series
-print(covid_df.loc[243])  # Returns all column values for row 243
+print(covid_df.loc[243])
 
 # View first or last n rows
-print(covid_df.head(5))  # First 5 rows
-print(covid_df.tail(5))  # Last 5 rows
+print(covid_df.head(5))
+print(covid_df.tail(5))
 
 # Access a range of rows
-print(covid_df.loc[108:113])  # Rows from index 108 to 113 (inclusive)
+print(covid_df.loc[108:113])  # Rows 108 to 113 (inclusive)
 
 # Find the first non-NaN value in a column
-print(covid_df.new_tests.first_valid_index())  # Returns the index of first non-NaN value
+print(covid_df.new_tests.first_valid_index())
 
 # Get a random sample of rows
-print(covid_df.sample(10))  # Returns 10 randomly selected rows
+print(covid_df.sample(10))
 ```
 
 ### Quick Reference Table
@@ -384,7 +382,7 @@ print(covid_df.sample(10))  # Returns 10 randomly selected rows
 
 Once you have data in a DataFrame, you often want to perform calculations and analysis on it. The simplest operations involve aggregating data across rows to get totals or summaries.
 
-The `.sum()` method calculates the sum of all values in a Series (column). This is similar to NumPy's sum function and is useful for getting totals like total cases, total deaths, or total tests conducted.
+The `.sum()` method calculates the sum of all values in a Series (column). This is useful for getting totals like total cases, total deaths, or total tests conducted.
 
 ```python
 total_cases = covid_df.new_cases.sum()
@@ -393,9 +391,7 @@ total_deaths = covid_df.new_deaths.sum()
 
 ### Calculating Rates and Ratios
 
-Beyond just summing values, you can calculate meaningful metrics by performing operations on aggregated data. For example, you can calculate the death rate by dividing total deaths by total cases. This tells you the ratio of deaths to the number of cases.
-
-Similarly, you can calculate the positive test rate by dividing total cases by total tests, which shows what percentage of tests resulted in positive cases.
+Beyond just summing values, you can calculate meaningful metrics by performing operations on aggregated data. For example, you can calculate the death rate by dividing total deaths by total cases.
 
 ```python
 death_rate = total_deaths / total_cases    # Deaths per case
@@ -404,23 +400,20 @@ positive_rate = total_cases / total_tests  # Positive cases per test
 
 ### Incorporating Historical Data
 
-Often, your DataFrame starts with a specific date and doesn't include all historical data. You may need to incorporate initial values from before your dataset begins. You can add these initial values to your aggregated DataFrame values to get a complete picture.
-
-For example, if your dataset tracks new tests starting from a certain date, but you know there were tests conducted before that date, you can add that initial count to your calculation:
+Often, your DataFrame starts with a specific date and doesn't include all historical data. You may need to incorporate initial values from before your dataset begins:
 
 ```python
 initial_tests = 935310  # Tests conducted before dataset starts
 total_tests = initial_tests + covid_df.new_tests.sum()
 total_cases = covid_df.new_cases.sum()
 
-# Now calculate the positive rate with complete historical data
 positive_rate = total_cases / total_tests
 ```
 
 ### Practical Examples
 
 ```python
-# Calculate total cases and deaths from the DataFrame
+# Calculate total cases and deaths
 total_cases = covid_df.new_cases.sum()
 total_deaths = covid_df.new_deaths.sum()
 
@@ -430,12 +423,11 @@ death_rate = total_deaths / total_cases
 # Calculate total tests conducted
 total_tests = covid_df.new_tests.sum()
 
-# Incorporate initial values into calculations
-# If there were 935310 tests before the data starts
+# Incorporate historical data before dataset start
 initial_tests = 935310
 total_tests_complete = initial_tests + covid_df.new_tests.sum()
 
-# Calculate positive test rate (cases per test) with complete historical data
+# Calculate positive test rate with complete historical data
 positive_rate = total_cases / total_tests_complete
 ```
 
@@ -453,70 +445,57 @@ positive_rate = total_cases / total_tests_complete
 
 ### Basic Boolean Querying
 
-One of the most powerful features in pandas is the ability to query data using conditional statements. Boolean querying allows you to filter rows based on specific conditions.
-
-When you create a query like `covid_df.new_cases > 1000`, pandas returns a new Series with the same length as the original DataFrame, but instead of containing the data values, it contains **True** or **False** values depending on whether each row satisfies the condition.
+One of the most powerful features in pandas is the ability to query data using conditional statements. When you create a query like `covid_df.new_cases > 1000`, pandas returns a Series of **True** or **False** values for every row depending on whether the condition is met.
 
 ### Using Boolean Series as Filters
 
-Once you have a boolean Series (True/False values), you can use it to filter the original DataFrame. When you pass a boolean Series as an index to a DataFrame, pandas returns only the rows where the Series contains **True**, giving you the complete row data for those matches.
+Once you have a boolean Series, you can pass it as an index to the DataFrame. Pandas returns only the rows where the value is **True**.
 
 ### Inline Querying
 
-Instead of creating a separate variable for the boolean Series, you can write the condition directly inline. This is more concise and readable, and produces the same result as creating an intermediate variable.
-
-### Displaying More Rows
-
-By default, pandas displays only the first and last 5 rows of large DataFrames, with `...` in between. If you want to display more or all rows, you can use the `pd.option_context()` function with the `display.max_rows` parameter. You'll need to import `display` from `IPython`.
-
-### Complex Queries with Multiple Columns
-
-You can create more sophisticated queries by combining conditions from multiple columns. For example, you can calculate a ratio between two columns and use that in your query condition. This allows you to find rows that meet complex criteria.
+Instead of creating a separate variable for the boolean Series, you can write the condition directly inline — more concise and produces the same result.
 
 ### Adding New Columns
 
-In addition to querying existing columns, you can add new calculated columns to your DataFrame. Simply assign a Series (which can be a calculation involving existing columns) to a new column name using bracket notation.
+You can add new calculated columns to your DataFrame by assigning a Series to a new column name using bracket notation.
 
 ### Dropping Columns
 
-If you no longer need certain columns, you can remove them using the `.drop()` method. The `inplace=True` parameter tells pandas to modify the original DataFrame directly instead of creating a copy.
+Remove unwanted columns using the `.drop()` method. The `inplace=True` parameter modifies the original DataFrame directly instead of creating a copy.
 
 ### Practical Examples
 
 ```python
 # Basic boolean query - returns True/False Series
 high_new_cases = covid_df.new_cases > 1000
-print(high_new_cases)  # Series of True/False values
+print(high_new_cases)
 
 # Use boolean Series to filter the DataFrame
 filtered_df = covid_df[high_new_cases]
-print(filtered_df)  # Only rows where new_cases > 1000
 
 # Inline querying - write condition directly
 high_new_cases_df = covid_df[covid_df.new_cases > 1000]
 
-# Display more rows than default (first 5 + last 5)
+# Display more rows than default
 from IPython.display import display
-import pandas as pd
 
 with pd.option_context('display.max_rows', 100):
     display(covid_df[covid_df.new_cases > 1000])
 
-# Complex query with multiple columns
-# Find days where positive rate was higher than average
+# Complex query using a ratio between two columns
 positive_rate_avg = covid_df.new_cases.sum() / covid_df.new_tests.sum()
 high_ratio_df = covid_df[covid_df.new_cases / covid_df.new_tests > positive_rate_avg]
 
-# Add a new column with calculated values
+# Add a new calculated column
 covid_df['positive_rate'] = covid_df.new_cases / covid_df.new_tests
 
-# Drop a column from the DataFrame
+# Drop a column
 covid_df.drop(columns=['positive_rate'], inplace=True)
 
-# Multiple conditions - rows meeting both criteria
+# Multiple conditions - both must be true (AND)
 covid_df[(covid_df.new_cases > 1000) & (covid_df.new_deaths > 50)]
 
-# Multiple conditions - rows meeting either criteria
+# Multiple conditions - either must be true (OR)
 covid_df[(covid_df.new_cases > 1000) | (covid_df.new_deaths > 50)]
 ```
 
@@ -530,8 +509,8 @@ covid_df[(covid_df.new_cases > 1000) | (covid_df.new_deaths > 50)]
 | `pd.option_context()` | Temporarily change display settings | `pd.option_context('display.max_rows', 100)` | Context manager |
 | `df['new_col'] = calc` | Add calculated column | `covid_df['rate'] = covid_df.new_cases / covid_df.new_tests` | New column added |
 | `.drop(columns=[...])` | Remove columns | `covid_df.drop(columns=['col1'], inplace=True)` | Column removed |
-| `&` (AND operator) | Multiple conditions (both must be true) | `(df['col1'] > 100) & (df['col2'] < 50)` | Combined filter |
-| `\|` (OR operator) | Multiple conditions (either must be true) | `(df['col1'] > 100) \| (df['col2'] < 50)` | Combined filter |
+| `&` (AND) | Both conditions must be true | `(df['col1'] > 100) & (df['col2'] < 50)` | Combined filter |
+| `\|` (OR) | Either condition must be true | `(df['col1'] > 100) \| (df['col2'] < 50)` | Combined filter |
 
 ---
 
@@ -539,36 +518,24 @@ covid_df[(covid_df.new_cases > 1000) | (covid_df.new_deaths > 50)]
 
 ### Basic Sorting with sort_values()
 
-Sorting is a fundamental operation when working with data. The `.sort_values()` method allows you to order DataFrame rows based on the values in one or more columns. This is useful for ranking data, finding extremes (highest/lowest values), or organizing data for presentation.
-
-The method returns a new DataFrame with rows sorted according to your specification. The original DataFrame remains unchanged unless you use the `inplace=True` parameter.
+The `.sort_values()` method orders DataFrame rows based on the values in one or more columns. It returns a new sorted DataFrame — the original stays unchanged unless you use `inplace=True`.
 
 ### Ascending vs Descending Order
 
-By default, `.sort_values()` sorts in ascending order (smallest to largest). To reverse this and sort in descending order (largest to smallest), use the `ascending=False` parameter.
-
-For example, to find the 10 days with the highest number of cases, you would sort by the `new_cases` column in descending order and then use `.head(10)` to get the top 10 rows.
+By default, `.sort_values()` sorts in ascending order (smallest to largest). Use `ascending=False` to reverse this.
 
 ### Identifying Faulty Data
 
-When working with real-world data, you'll often encounter errors or anomalies. These can occur due to data entry mistakes, sensor errors, or system glitches. It's crucial to identify these faulty values before analysis.
-
-For example, in a COVID dataset tracking daily cases, negative values would be physically impossible—cases cannot decrease below zero. Such values indicate an error that needs to be corrected.
+Real-world data often contains errors — negative case counts, impossibly large values, or data entry mistakes. It's important to identify and handle these before analysis.
 
 ### Approaches to Handle Faulty Data
 
-When you discover faulty values, you have several options for how to handle them:
+When you discover faulty values, you have several options:
 
-1. **Replace with 0** - Assume the faulty entry should be zero
-2. **Replace with Column Average** - Use the mean of all values in that column
-3. **Replace with Adjacent Average** - Use the average of the previous and next values (useful for time-series data)
-4. **Drop the Row** - Remove the entire row if the data is unreliable
-
-Each approach has trade-offs:
-- **Zero replacement** is simple but may distort analysis
-- **Column average** preserves overall statistics but may not be contextually appropriate
-- **Adjacent average** works well for time-series data where values change gradually
-- **Dropping rows** removes the faulty data completely but may lose other valid information in that row
+1. **Replace with 0** — simple but may distort analysis
+2. **Replace with Column Average** — preserves overall statistics but may not be contextually appropriate
+3. **Replace with Adjacent Average** — works well for time-series data where values change gradually
+4. **Drop the Row** — removes faulty data completely but loses other valid values in that row
 
 The best approach depends on your data and analysis goals.
 
@@ -578,7 +545,7 @@ The best approach depends on your data and analysis goals.
 # Basic sorting - ascending order (default)
 sorted_df = covid_df.sort_values('new_cases')
 
-# Sorting in descending order - find highest values
+# Sorting in descending order
 sorted_df = covid_df.sort_values('new_cases', ascending=False)
 
 # Find the 10 days with highest number of cases
@@ -587,40 +554,34 @@ top_10_cases = covid_df.sort_values('new_cases', ascending=False).head(10)
 # Sort by multiple columns
 sorted_df = covid_df.sort_values(['new_cases', 'new_deaths'], ascending=False)
 
-# Identify faulty data
-# For example, negative cases (which should never occur)
+# Identify faulty data (e.g. negative cases — physically impossible)
 faulty_rows = covid_df[covid_df.new_cases < 0]
 
-# Approach 1: Replace faulty value with 0
+# Approach 1: Replace with 0
 covid_df.at[172, 'new_cases'] = 0
 
 # Approach 2: Replace with column average
-column_average = covid_df.new_cases.mean()
-covid_df.at[172, 'new_cases'] = column_average
+covid_df.at[172, 'new_cases'] = covid_df.new_cases.mean()
 
-# Approach 3: Replace with average of adjacent values (previous and next)
+# Approach 3: Replace with average of adjacent rows
 covid_df.at[172, 'new_cases'] = (covid_df.at[171, 'new_cases'] + covid_df.at[173, 'new_cases']) / 2
 
 # Approach 4: Drop the entire row
 covid_df.drop(172, inplace=True)
-
-# Sort after cleaning to see results
-covid_df.sort_values('new_cases', ascending=False).head(10)
 ```
 
 ### Quick Reference Table
 
 | Operation | Purpose | Example | Result |
 |-----------|---------|---------|--------|
-| `.sort_values('col')` | Sort by column ascending | `covid_df.sort_values('new_cases')` | Sorted DataFrame |
-| `.sort_values('col', ascending=False)` | Sort by column descending | `covid_df.sort_values('new_cases', ascending=False)` | Sorted DataFrame (high to low) |
+| `.sort_values('col')` | Sort ascending | `covid_df.sort_values('new_cases')` | Sorted DataFrame |
+| `.sort_values('col', ascending=False)` | Sort descending | `covid_df.sort_values('new_cases', ascending=False)` | Sorted DataFrame (high to low) |
 | `.sort_values([...])` | Sort by multiple columns | `covid_df.sort_values(['col1', 'col2'])` | Sorted by col1, then col2 |
 | `.head(n)` + sort | Get top n rows | `covid_df.sort_values('col', ascending=False).head(10)` | Top 10 rows |
-| `.tail(n)` + sort | Get bottom n rows | `covid_df.sort_values('col').tail(5)` | Bottom 5 rows |
-| `df[df['col'] < 0]` | Find faulty values | `covid_df[covid_df.new_cases < 0]` | Rows with negative cases |
-| `.at[row, 'col'] = value` | Replace single value | `covid_df.at[172, 'new_cases'] = 0` | Value replaced |
-| `.mean()` | Calculate column average | `covid_df.new_cases.mean()` | Scalar (average value) |
-| `.drop(row)` | Remove row | `covid_df.drop(172, inplace=True)` | Row removed |
+| `df[df['col'] < 0]` | Find faulty values | `covid_df[covid_df.new_cases < 0]` | Rows with negative values |
+| `.at[row, 'col'] = value` | Replace a single value | `covid_df.at[172, 'new_cases'] = 0` | Value replaced |
+| `.mean()` | Calculate column average | `covid_df.new_cases.mean()` | Scalar (float) |
+| `.drop(row)` | Remove a row | `covid_df.drop(172, inplace=True)` | Row removed |
 
 ---
 
@@ -632,7 +593,6 @@ By default, pandas reads date columns as `object` type (plain strings). To unloc
 
 ```python
 # Check the current type of the date column
-print(covid_df.date)         # Displays as plain strings
 print(covid_df.date.dtype)   # Output: object
 ```
 
@@ -643,8 +603,6 @@ Use `pd.to_datetime()` to convert a column from `object` to `datetime64`:
 ```python
 covid_df["date"] = pd.to_datetime(covid_df.date)
 ```
-
-After this, pandas understands the column as actual dates and you can extract components from it.
 
 ### Extracting Date Components
 
@@ -669,11 +627,9 @@ covid_df["weekday"] = pd.DatetimeIndex(covid_df.date).weekday
 | 5 | Saturday |
 | 6 | Sunday |
 
-**Note:** The `.weekday` attribute follows Python's convention where Monday = 0 and Sunday = 6.
+**Note:** Monday = 0 and Sunday = 6.
 
 ### Filtering by Date Components
-
-With the extracted columns, you can filter data for any specific time period:
 
 ```python
 # Filter for a specific month (e.g., May = month 5)
@@ -682,13 +638,11 @@ covid_df_may = covid_df[covid_df.month == 5]
 # Filter for a specific year
 covid_df_2020 = covid_df[covid_df.year == 2020]
 
-# Filter for a specific weekday (e.g., Sunday = 6)
+# Filter for Sundays only
 covid_df_sundays = covid_df[covid_df.weekday == 6]
 ```
 
 ### Calculating Monthly Metrics
-
-Once filtered, you can select only the columns you need and aggregate them:
 
 ```python
 # Step 1: Filter for the month
@@ -699,52 +653,23 @@ covid_df_may_metrics = covid_df_may[['new_cases', 'new_deaths', 'new_tests']]
 
 # Step 3: Sum them up
 covid_df_may_total = covid_df_may_metrics.sum()
-```
 
-Or do it all in one line:
-
-```python
+# Or do it all in one line
 covid_df_may_total = covid_df[covid_df.month == 5][['new_cases', 'new_deaths', 'new_tests']].sum()
 ```
 
 ### Comparing Weekday vs Overall Averages
 
-A common analysis is checking whether a specific day of the week has higher/lower values than the overall average:
-
 ```python
 # Overall mean
 overall_mean = covid_df.new_cases.mean()
 
-# Mean for Sundays only (weekday == 6)
+# Mean for Sundays only
 sunday_mean = covid_df[covid_df.weekday == 6].new_cases.mean()
 
-# Compare
 print(f"Overall avg cases: {overall_mean:.2f}")
 print(f"Sunday avg cases:  {sunday_mean:.2f}")
 print(f"Sundays higher? {sunday_mean > overall_mean}")
-```
-
-### Practical Examples
-
-```python
-# Convert date column to datetime type
-covid_df["date"] = pd.to_datetime(covid_df.date)
-
-# Extract date components into new columns
-covid_df["year"]    = pd.DatetimeIndex(covid_df.date).year
-covid_df["month"]   = pd.DatetimeIndex(covid_df.date).month
-covid_df["day"]     = pd.DatetimeIndex(covid_df.date).day
-covid_df["weekday"] = pd.DatetimeIndex(covid_df.date).weekday
-
-# Filter for May
-covid_df_may = covid_df[covid_df.month == 5]
-
-# Get May totals for key metrics
-covid_df_may_total = covid_df_may[['new_cases', 'new_deaths', 'new_tests']].sum()
-
-# Compare Sunday average vs overall average
-overall_mean = covid_df.new_cases.mean()
-sunday_mean  = covid_df[covid_df.weekday == 6].new_cases.mean()
 ```
 
 ### Quick Reference Table
@@ -755,10 +680,12 @@ sunday_mean  = covid_df[covid_df.weekday == 6].new_cases.mean()
 | `pd.DatetimeIndex(df.col).year` | Extract year | `pd.DatetimeIndex(covid_df.date).year` | Series of years |
 | `pd.DatetimeIndex(df.col).month` | Extract month (1–12) | `pd.DatetimeIndex(covid_df.date).month` | Series of months |
 | `pd.DatetimeIndex(df.col).day` | Extract day (1–31) | `pd.DatetimeIndex(covid_df.date).day` | Series of days |
-| `pd.DatetimeIndex(df.col).weekday` | Extract weekday (0=Mon, 6=Sun) | `pd.DatetimeIndex(covid_df.date).weekday` | Series of weekday ints |
+| `pd.DatetimeIndex(df.col).weekday` | Extract weekday (0=Mon, 6=Sun) | `pd.DatetimeIndex(covid_df.date).weekday` | Series of ints |
 | `df[df.month == n]` | Filter by month | `covid_df[covid_df.month == 5]` | Filtered DataFrame |
 | `df[df.weekday == n]` | Filter by weekday | `covid_df[covid_df.weekday == 6]` | Sundays only |
 | `.mean()` | Average of a column | `covid_df.new_cases.mean()` | Scalar (float) |
+
+---
 
 ## Grouping and Aggregation
 
@@ -774,11 +701,9 @@ Use `.groupby()` to group rows by a column, then select the columns you want and
 covid_month_df = covid_df.groupby('month')[['new_cases', 'new_deaths', 'new_tests']].sum()
 ```
 
-This returns a new DataFrame with 12 rows (one per month), where each row contains the **total** cases, deaths, and tests for that month.
+This returns a DataFrame with one row per month, where each row contains the **total** cases, deaths, and tests for that month.
 
 ### Using Different Aggregations
-
-Instead of `.sum()`, you can swap in any aggregation function depending on what you need:
 
 ```python
 # Total per month
@@ -796,7 +721,7 @@ covid_df.groupby('weekday')[['new_cases', 'new_deaths', 'new_tests']].mean()
 
 ### Cumulative Sum with cumsum()
 
-While `.sum()` gives you a single total, `.cumsum()` (cumulative sum) gives you a **running total** — for each row, it shows the sum of all values up to and including that row. This is useful for tracking how a metric has grown over time.
+While `.sum()` gives you a single total, `.cumsum()` gives you a **running total** — for each row, it shows the sum of all values up to and including that row. This is useful for tracking how a metric grows over time.
 
 ```python
 covid_df["total_cases"] = covid_df.new_cases.cumsum()
@@ -822,13 +747,11 @@ covid_month_df = covid_df.groupby('month')[['new_cases', 'new_deaths', 'new_test
 # Group by month — average daily cases per month
 covid_month_avg = covid_df.groupby('month')[['new_cases', 'new_deaths', 'new_tests']].mean()
 
-# Group by weekday — see which day of week had highest avg cases
+# Group by weekday — see which day had highest avg cases
 covid_weekday_df = covid_df.groupby('weekday')[['new_cases', 'new_deaths']].mean()
 
 # Cumulative sum — running total of cases over time
-covid_df["total_cases"] = covid_df.new_cases.cumsum()
-
-# Cumulative sum for multiple columns
+covid_df["total_cases"]  = covid_df.new_cases.cumsum()
 covid_df["total_deaths"] = covid_df.new_deaths.cumsum()
 covid_df["total_tests"]  = covid_df.new_tests.cumsum()
 ```
@@ -842,6 +765,8 @@ covid_df["total_tests"]  = covid_df.new_tests.cumsum()
 | `.groupby()[cols].mean()` | Average per group | `covid_df.groupby('month')[['new_cases']].mean()` | DataFrame with averages |
 | `.groupby()[cols].max()` | Max value per group | `covid_df.groupby('month')[['new_cases']].max()` | DataFrame with max values |
 | `.cumsum()` | Running total over rows | `covid_df.new_cases.cumsum()` | Series with cumulative sum |
+
+---
 
 ## Merging Different DataFrames
 
@@ -860,8 +785,6 @@ location_df = pd.read_csv("locations.csv")
 location_df[location_df.location == "Italy"]
 ```
 
-This confirms the data is there and shows you what columns are available before merging.
-
 ### Step 2 — Add a Matching Column
 
 For the merge to work, both DataFrames need a column with the **same name and matching values**. Since `covid_df` doesn't have a `location` column, add one manually:
@@ -878,11 +801,11 @@ Now `covid_df.location` and `location_df.location` both contain `"Italy"` and ca
 merged_df = covid_df.merge(location_df, on="location")
 ```
 
-This joins both DataFrames on the `location` column. The result is a new DataFrame that contains all columns from `covid_df` plus all columns from `location_df` — side by side for every matching row.
+This joins both DataFrames on the `location` column. The result contains all columns from both DataFrames side by side for every matching row.
 
 ### Step 4 — Calculate Cases Per Million
 
-Once merged, you have access to the `population` column from `location_df`. You can now calculate meaningful normalized metrics:
+Once merged, you have access to the `population` column from `location_df` and can calculate normalized metrics:
 
 ```python
 merged_df["cases_per_million"] = merged_df.total_cases * 1e6 / merged_df.population
@@ -890,9 +813,7 @@ merged_df["cases_per_million"] = merged_df.total_cases * 1e6 / merged_df.populat
 
 **Why cases per million?**
 
-Raw case counts are hard to compare across regions with different population sizes. A country with 10,000 cases means something very different if its population is 100,000 vs 100,000,000.
-
-Cases per million normalizes this — it tells you: *"out of every 1 million people, how many got infected?"*
+Raw case counts are hard to compare across regions with different population sizes. A country with 10,000 cases means something very different if its population is 100,000 vs 100,000,000. Cases per million normalizes this — it tells you: *"out of every 1 million people, how many got infected?"*
 
 **How the math works:**
 
@@ -903,7 +824,7 @@ Cases per million normalizes this — it tells you: *"out of every 1 million peo
 | `* 1e6` | Multiply by 1,000,000 to scale the result |
 | Result | `50000 * 1000000 / 60000000` = **833 cases per million** |
 
-`1e6` is just Python's scientific notation for `1,000,000`. Multiplying first avoids very small decimal results that are hard to read.
+`1e6` is Python's scientific notation for `1,000,000`. Multiplying first avoids very small decimal results that are hard to read.
 
 ### Practical Examples
 
@@ -936,6 +857,8 @@ merged_df["tests_per_million"]  = merged_df.total_tests  * 1e6 / merged_df.popul
 | `df.merge(other, on="col")` | Merge two DataFrames | `covid_df.merge(location_df, on="location")` | Combined DataFrame |
 | `* 1e6 / population` | Normalize to per-million | `total_cases * 1e6 / population` | Cases per million |
 
+---
+
 ## Writing Data Back to Files
 
 ### Why Create a Clean DataFrame First?
@@ -951,23 +874,23 @@ result_df = merged_df[['date', 'new_cases', 'total_cases', 'cases_per_million']]
 Use `.to_csv()` to save your DataFrame as a CSV file:
 
 ```python
-result_df.to_csv("results.csv", index=None)
+result_df.to_csv("results.csv", index=False)
 ```
 
 **The `index` parameter:**
 
-By default, pandas writes the row index (0, 1, 2, 3...) as an extra column in the CSV. This is usually unwanted since it's just a positional number, not real data. Setting `index=None` (or `index=False`) skips it.
+By default, pandas writes the row index (0, 1, 2, 3...) as an extra column in the CSV. This is usually unwanted since it's just a positional number, not real data. Setting `index=False` skips it.
 
 | Setting | Output |
 |---------|--------|
 | `index=True` (default) | Row numbers included as first column |
-| `index=None` or `index=False` | Row numbers excluded — cleaner output |
+| `index=False` | Row numbers excluded — cleaner output |
 
 **NaN values:** Any missing values in your DataFrame are written as empty cells in the CSV automatically — no extra handling needed.
 
 ### Writing to Other File Formats
 
-Just like `pd.read_csv()` has equivalents for other formats, `.to_csv()` does too. Pandas supports writing to several formats out of the box:
+Just like `pd.read_csv()` has equivalents for other formats, `.to_csv()` does too:
 
 ```python
 # CSV — most common, works everywhere
@@ -997,9 +920,9 @@ print(result_df.shape)
 result_df.to_csv("results.csv", index=False)
 
 # Writing to other formats
-result_df.to_excel("results.xlsx", index=False)   # Excel
-result_df.to_json("results.json")                 # JSON
-result_df.to_parquet("results.parquet", index=False)  # Parquet
+result_df.to_excel("results.xlsx", index=False)
+result_df.to_json("results.json")
+result_df.to_parquet("results.parquet", index=False)
 ```
 
 ### Quick Reference Table
@@ -1012,3 +935,113 @@ result_df.to_parquet("results.parquet", index=False)  # Parquet
 | `.to_excel("file.xlsx")` | Write to Excel | `result_df.to_excel("results.xlsx", index=False)` | Excel file saved |
 | `.to_json("file.json")` | Write to JSON | `result_df.to_json("results.json")` | JSON file saved |
 | `.to_parquet("file.parquet")` | Write to Parquet | `result_df.to_parquet("results.parquet")` | Parquet file saved |
+
+---
+
+## Basic Plotting in Pandas
+
+### Why Plot Directly in Pandas?
+
+For advanced visualizations you would typically use libraries like **Matplotlib** or **Seaborn**, but pandas has built-in `.plot()` support for quick, basic charts without any extra setup. It's useful for fast exploration during analysis.
+
+### Basic Line Plot
+
+```python
+result_df.new_cases.plot()
+```
+
+By default, pandas uses the row index (0, 1, 2...) on the x-axis, which makes it hard to read dates or meaningful values.
+
+### Setting the Date as the Index
+
+To get dates on the x-axis instead of row numbers, set the `date` column as the DataFrame index:
+
+```python
+result_df.set_index('date', inplace=True)
+```
+
+Now any plot will automatically use dates on the x-axis, making your graphs much more readable. You can also use the date index to access data for a specific date directly:
+
+```python
+result_df.loc['2020-05-15']  # Get all values for a specific date
+```
+
+### Plotting Multiple Columns
+
+Calling `.plot()` on multiple columns in sequence plots them all on the **same graph**, making it easy to compare trends:
+
+```python
+result_df.new_cases.plot()
+result_df.new_deaths.plot()
+```
+
+Both lines appear on one chart. pandas automatically assigns different colors to each line.
+
+### Plotting a Calculated Series
+
+You can plot the result of a calculation directly without adding it as a new column first:
+
+```python
+death_rate = result_df.total_deaths / result_df.total_cases
+death_rate.plot(title="Death Rate Over Time")
+```
+
+The `title` parameter adds a title to the chart.
+
+### Bar Charts
+
+Use `kind="bar"` to switch from a line plot to a bar chart. This is especially useful after grouping — for example, comparing total cases across months:
+
+```python
+covid_month_df.new_cases.plot(kind="bar")
+```
+
+Each bar represents one month, making it easy to spot which months had the highest case counts.
+
+### Practical Examples
+
+```python
+# Set date as index so x-axis shows dates
+result_df.set_index('date', inplace=True)
+
+# Basic line plot — new cases over time
+result_df.new_cases.plot()
+
+# Plot multiple columns on the same graph
+result_df.new_cases.plot()
+result_df.new_deaths.plot()
+
+# Plot a calculated metric with a title
+death_rate = result_df.total_deaths / result_df.total_cases
+death_rate.plot(title="Death Rate Over Time")
+
+# Bar chart — total cases per month
+covid_month_df.new_cases.plot(kind="bar")
+
+# Bar chart — total deaths per month
+covid_month_df.new_deaths.plot(kind="bar")
+
+# Access data by date after setting date as index
+result_df.loc['2020-05-15']
+```
+
+### Plot Types Available in Pandas
+
+| `kind` value | Chart Type | Best Used For |
+|--------------|------------|---------------|
+| `"line"` (default) | Line chart | Trends over time |
+| `"bar"` | Vertical bar chart | Comparing categories |
+| `"barh"` | Horizontal bar chart | Comparing categories with long labels |
+| `"hist"` | Histogram | Distribution of values |
+| `"pie"` | Pie chart | Proportions of a whole |
+| `"scatter"` | Scatter plot | Relationship between two columns |
+
+### Quick Reference Table
+
+| Operation | Purpose | Example | Result |
+|-----------|---------|---------|--------|
+| `df.col.plot()` | Basic line plot | `result_df.new_cases.plot()` | Line chart |
+| `df.set_index('col')` | Set a column as the index | `result_df.set_index('date', inplace=True)` | Date on x-axis |
+| `df.col.plot(title="...")` | Add a title to the plot | `death_rate.plot(title="Death Rate")` | Titled chart |
+| `df.col.plot(kind="bar")` | Bar chart | `covid_month_df.new_cases.plot(kind="bar")` | Bar chart |
+| `df.loc['date']` | Access row by date index | `result_df.loc['2020-05-15']` | Row for that date |
