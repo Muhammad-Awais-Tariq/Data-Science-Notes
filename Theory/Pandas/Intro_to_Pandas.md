@@ -932,3 +932,80 @@ merged_df["tests_per_million"]  = merged_df.total_tests  * 1e6 / merged_df.popul
 | `df["col"] = value` | Add a constant column | `covid_df["location"] = "Italy"` | New column added |
 | `df.merge(other, on="col")` | Merge two DataFrames | `covid_df.merge(location_df, on="location")` | Combined DataFrame |
 | `* 1e6 / population` | Normalize to per-million | `total_cases * 1e6 / population` | Cases per million |
+
+## Writing Data Back to Files
+
+### Why Create a Clean DataFrame First?
+
+Before writing data to a file, it's good practice to create a trimmed DataFrame containing only the columns you actually need. This keeps your output file clean and avoids carrying over intermediate or redundant columns from earlier in your analysis.
+
+```python
+result_df = merged_df[['date', 'new_cases', 'total_cases', 'cases_per_million']]
+```
+
+### Writing to CSV
+
+Use `.to_csv()` to save your DataFrame as a CSV file:
+
+```python
+result_df.to_csv("results.csv", index=None)
+```
+
+**The `index` parameter:**
+
+By default, pandas writes the row index (0, 1, 2, 3...) as an extra column in the CSV. This is usually unwanted since it's just a positional number, not real data. Setting `index=None` (or `index=False`) skips it.
+
+| Setting | Output |
+|---------|--------|
+| `index=True` (default) | Row numbers included as first column |
+| `index=None` or `index=False` | Row numbers excluded — cleaner output |
+
+**NaN values:** Any missing values in your DataFrame are written as empty cells in the CSV automatically — no extra handling needed.
+
+### Writing to Other File Formats
+
+Just like `pd.read_csv()` has equivalents for other formats, `.to_csv()` does too. Pandas supports writing to several formats out of the box:
+
+```python
+# CSV — most common, works everywhere
+result_df.to_csv("results.csv", index=False)
+
+# Excel — useful for sharing with non-technical users
+result_df.to_excel("results.xlsx", index=False)
+
+# JSON — useful for web apps or APIs
+result_df.to_json("results.json")
+
+# Parquet — efficient binary format for large datasets
+result_df.to_parquet("results.parquet", index=False)
+```
+
+### Practical Examples
+
+```python
+# Step 1: Select only the columns you need
+result_df = merged_df[['date', 'new_cases', 'total_cases', 'cases_per_million']]
+
+# Step 2: Preview before writing to catch any issues
+print(result_df.head())
+print(result_df.shape)
+
+# Step 3: Write to CSV
+result_df.to_csv("results.csv", index=False)
+
+# Writing to other formats
+result_df.to_excel("results.xlsx", index=False)   # Excel
+result_df.to_json("results.json")                 # JSON
+result_df.to_parquet("results.parquet", index=False)  # Parquet
+```
+
+### Quick Reference Table
+
+| Operation | Purpose | Example | Result |
+|-----------|---------|---------|--------|
+| `df[['col1', 'col2']]` | Select specific columns | `merged_df[['date', 'new_cases']]` | Trimmed DataFrame |
+| `.to_csv("file.csv")` | Write to CSV | `result_df.to_csv("results.csv")` | CSV file saved |
+| `index=False` | Skip row numbers in output | `result_df.to_csv("results.csv", index=False)` | Cleaner CSV |
+| `.to_excel("file.xlsx")` | Write to Excel | `result_df.to_excel("results.xlsx", index=False)` | Excel file saved |
+| `.to_json("file.json")` | Write to JSON | `result_df.to_json("results.json")` | JSON file saved |
+| `.to_parquet("file.parquet")` | Write to Parquet | `result_df.to_parquet("results.parquet")` | Parquet file saved |
