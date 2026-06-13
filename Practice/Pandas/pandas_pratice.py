@@ -114,3 +114,10 @@ covid_df_may_total = covid_df[covid_df.month == 5][['new_cases', 'new_deaths', '
 
 overall_mean = covid_df.new_cases.mean()
 sunday_mean  = covid_df[covid_df.weekday == 6].new_cases.mean()
+
+covid_month_df = covid_df.groupby('month')[['new_cases', 'new_deaths', 'new_tests']].sum()
+
+covid_df["total_cases"] = covid_df.new_cases.cumsum()
+
+covid_df["total_deaths"] = covid_df.new_deaths.cumsum()
+covid_df["total_tests"]  = covid_df.new_tests.cumsum()
