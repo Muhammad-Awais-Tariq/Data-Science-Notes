@@ -839,3 +839,96 @@ covid_df["total_tests"]  = covid_df.new_tests.cumsum()
 | `.groupby()[cols].mean()` | Average per group | `covid_df.groupby('month')[['new_cases']].mean()` | DataFrame with averages |
 | `.groupby()[cols].max()` | Max value per group | `covid_df.groupby('month')[['new_cases']].max()` | DataFrame with max values |
 | `.cumsum()` | Running total over rows | `covid_df.new_cases.cumsum()` | Series with cumulative sum |
+
+## Merging Different DataFrames
+
+### Why Merge DataFrames?
+
+Sometimes the data you need is spread across multiple files. Merging lets you combine two DataFrames into one by matching rows that share a common column — similar to a JOIN in SQL.
+
+**Example scenario:** You have daily COVID data for Italy, and a separate `locations.csv` with population and medical statistics for countries worldwide. To calculate metrics like cases per million, you need both files combined.
+
+### Step 1 — Load and Inspect the Second DataFrame
+
+```python
+location_df = pd.read_csv("locations.csv")
+
+# Check if Italy exists in the dataset
+location_df[location_df.location == "Italy"]
+```
+
+This confirms the data is there and shows you what columns are available before merging.
+
+### Step 2 — Add a Matching Column
+
+For the merge to work, both DataFrames need a column with the **same name and matching values**. Since `covid_df` doesn't have a `location` column, add one manually:
+
+```python
+covid_df["location"] = "Italy"
+```
+
+Now `covid_df.location` and `location_df.location` both contain `"Italy"` and can be matched.
+
+### Step 3 — Merge the DataFrames
+
+```python
+merged_df = covid_df.merge(location_df, on="location")
+```
+
+This joins both DataFrames on the `location` column. The result is a new DataFrame that contains all columns from `covid_df` plus all columns from `location_df` — side by side for every matching row.
+
+### Step 4 — Calculate Cases Per Million
+
+Once merged, you have access to the `population` column from `location_df`. You can now calculate meaningful normalized metrics:
+
+```python
+merged_df["cases_per_million"] = merged_df.total_cases * 1e6 / merged_df.population
+```
+
+**Why cases per million?**
+
+Raw case counts are hard to compare across regions with different population sizes. A country with 10,000 cases means something very different if its population is 100,000 vs 100,000,000.
+
+Cases per million normalizes this — it tells you: *"out of every 1 million people, how many got infected?"*
+
+**How the math works:**
+
+| Value | Meaning |
+|-------|---------|
+| `total_cases` | Raw number of cases (e.g. 50,000) |
+| `population` | Total population (e.g. 60,000,000) |
+| `* 1e6` | Multiply by 1,000,000 to scale the result |
+| Result | `50000 * 1000000 / 60000000` = **833 cases per million** |
+
+`1e6` is just Python's scientific notation for `1,000,000`. Multiplying first avoids very small decimal results that are hard to read.
+
+### Practical Examples
+
+```python
+# Step 1: Load the location data
+location_df = pd.read_csv("locations.csv")
+
+# Step 2: Verify Italy exists in location data
+location_df[location_df.location == "Italy"]
+
+# Step 3: Add matching column to covid_df
+covid_df["location"] = "Italy"
+
+# Step 4: Merge on the shared column
+merged_df = covid_df.merge(location_df, on="location")
+
+# Step 5: Calculate normalized metrics
+merged_df["cases_per_million"]  = merged_df.total_cases  * 1e6 / merged_df.population
+merged_df["deaths_per_million"] = merged_df.total_deaths * 1e6 / merged_df.population
+merged_df["tests_per_million"]  = merged_df.total_tests  * 1e6 / merged_df.population
+```
+
+### Quick Reference Table
+
+| Operation | Purpose | Example | Result |
+|-----------|---------|---------|--------|
+| `pd.read_csv("file.csv")` | Load a second dataset | `pd.read_csv("locations.csv")` | New DataFrame |
+| `df[df.col == "value"]` | Check if a value exists | `location_df[location_df.location == "Italy"]` | Filtered rows |
+| `df["col"] = value` | Add a constant column | `covid_df["location"] = "Italy"` | New column added |
+| `df.merge(other, on="col")` | Merge two DataFrames | `covid_df.merge(location_df, on="location")` | Combined DataFrame |
+| `* 1e6 / population` | Normalize to per-million | `total_cases * 1e6 / population` | Cases per million |
