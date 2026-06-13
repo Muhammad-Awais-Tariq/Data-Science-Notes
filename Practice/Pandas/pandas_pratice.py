@@ -133,3 +133,14 @@ merged_df = covid_df.merge(location_df, on="location")
 merged_df["cases_per_million"]  = merged_df.total_cases  * 1e6 / merged_df.population
 merged_df["deaths_per_million"] = merged_df.total_deaths * 1e6 / merged_df.population
 merged_df["tests_per_million"]  = merged_df.total_tests  * 1e6 / merged_df.population
+
+result_df = merged_df[['date', 'new_cases', 'total_cases', 'cases_per_million']]
+
+print(result_df.head())
+print(result_df.shape)
+
+result_df.to_csv("results.csv", index=False)
+
+result_df.to_excel("results.xlsx", index=False)   
+result_df.to_json("results.json")                 
+result_df.to_parquet("results.parquet", index=False)  
