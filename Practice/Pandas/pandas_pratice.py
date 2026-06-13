@@ -121,3 +121,15 @@ covid_df["total_cases"] = covid_df.new_cases.cumsum()
 
 covid_df["total_deaths"] = covid_df.new_deaths.cumsum()
 covid_df["total_tests"]  = covid_df.new_tests.cumsum()
+
+location_df = pd.read_csv("locations.csv")
+
+location_df[location_df.location == "Italy"]
+
+covid_df["location"] = "Italy"
+
+merged_df = covid_df.merge(location_df, on="location")
+
+merged_df["cases_per_million"]  = merged_df.total_cases  * 1e6 / merged_df.population
+merged_df["deaths_per_million"] = merged_df.total_deaths * 1e6 / merged_df.population
+merged_df["tests_per_million"]  = merged_df.total_tests  * 1e6 / merged_df.population
