@@ -11,6 +11,8 @@
 8. [Accessing and Indexing DataFrame Values](#accessing-and-indexing-dataframe-values)
 9. [Analyzing Data from a DataFrame](#analyzing-data-from-a-dataframe)
 10. [Querying and Filtering Data](#querying-and-filtering-data)
+11. [Sorting Data and Handling Faulty Values](#sorting-data-and-handling-faulty-values)
+12. [Working with Dates](#working-with-dates)
 
 ---
 
@@ -150,12 +152,12 @@ df = pd.read_csv("covid_data.csv")
 print(f"Shape: {df.shape}")  # Output: Shape: (5000, 5)
 
 # Step 3: Explore the data
-df.info()  # See data types and null values
-df.describe()  # See statistics
+df.info()       # See data types and null values
+df.describe()   # See statistics
 
 # Step 4: View the data
-print(df.head())  # See first 5 rows
-print(df.columns)  # See column names
+print(df.head())     # See first 5 rows
+print(df.columns)    # See column names
 ```
 
 ---
@@ -314,8 +316,6 @@ When pandas encounters missing data in your DataFrame, it represents it as **NaN
 
 ### Practical Examples
 
-Here are the main methods for accessing and indexing DataFrame values:
-
 ```python
 # Access an entire column - returns a Series
 print(covid_df['new_cases'])  # Returns all values in the new_cases column
@@ -372,152 +372,152 @@ print(covid_df.sample(10))  # Returns 10 randomly selected rows
 | `df.sample(n)` | Random sample of n rows | DataFrame | `covid_df.sample(10)` |
 | `df.first_valid_index()` | Find first non-NaN index | Index | `covid_df.new_tests.first_valid_index()` |
 
+---
+
 ## Analyzing Data from a DataFrame
- 
+
 ### Basic Aggregation and Summation
- 
+
 Once you have data in a DataFrame, you often want to perform calculations and analysis on it. The simplest operations involve aggregating data across rows to get totals or summaries.
- 
+
 The `.sum()` method calculates the sum of all values in a Series (column). This is similar to NumPy's sum function and is useful for getting totals like total cases, total deaths, or total tests conducted.
- 
+
 ```python
 total_cases = covid_df.new_cases.sum()
 total_deaths = covid_df.new_deaths.sum()
 ```
- 
+
 ### Calculating Rates and Ratios
- 
+
 Beyond just summing values, you can calculate meaningful metrics by performing operations on aggregated data. For example, you can calculate the death rate by dividing total deaths by total cases. This tells you the ratio of deaths to the number of cases.
- 
+
 Similarly, you can calculate the positive test rate by dividing total cases by total tests, which shows what percentage of tests resulted in positive cases.
- 
+
 ```python
-death_rate = total_deaths / total_cases  # Deaths per case
+death_rate = total_deaths / total_cases    # Deaths per case
 positive_rate = total_cases / total_tests  # Positive cases per test
 ```
- 
+
 ### Incorporating Historical Data
- 
+
 Often, your DataFrame starts with a specific date and doesn't include all historical data. You may need to incorporate initial values from before your dataset begins. You can add these initial values to your aggregated DataFrame values to get a complete picture.
- 
+
 For example, if your dataset tracks new tests starting from a certain date, but you know there were tests conducted before that date, you can add that initial count to your calculation:
- 
+
 ```python
 initial_tests = 935310  # Tests conducted before dataset starts
 total_tests = initial_tests + covid_df.new_tests.sum()
 total_cases = covid_df.new_cases.sum()
- 
+
 # Now calculate the positive rate with complete historical data
 positive_rate = total_cases / total_tests
 ```
- 
+
 ### Practical Examples
- 
-Here are common analysis operations on DataFrames:
- 
+
 ```python
 # Calculate total cases and deaths from the DataFrame
 total_cases = covid_df.new_cases.sum()
 total_deaths = covid_df.new_deaths.sum()
- 
+
 # Calculate death rate (deaths per case)
 death_rate = total_deaths / total_cases
- 
+
 # Calculate total tests conducted
 total_tests = covid_df.new_tests.sum()
- 
+
 # Incorporate initial values into calculations
 # If there were 935310 tests before the data starts
 initial_tests = 935310
 total_tests_complete = initial_tests + covid_df.new_tests.sum()
- 
+
 # Calculate positive test rate (cases per test) with complete historical data
 positive_rate = total_cases / total_tests_complete
 ```
- 
+
 ### Quick Reference Table
- 
+
 | Operation | Purpose | Example | Result Type |
 |-----------|---------|---------|-------------|
 | `.sum()` | Sum all values in a column | `covid_df.new_cases.sum()` | Scalar (int/float) |
 | `/` (Division) | Calculate ratio or rate | `total_deaths / total_cases` | Scalar (float) |
 | `+` (Addition) | Add values together | `initial_value + series.sum()` | Scalar (int/float) |
 
+---
+
 ## Querying and Filtering Data
- 
+
 ### Basic Boolean Querying
- 
+
 One of the most powerful features in pandas is the ability to query data using conditional statements. Boolean querying allows you to filter rows based on specific conditions.
- 
+
 When you create a query like `covid_df.new_cases > 1000`, pandas returns a new Series with the same length as the original DataFrame, but instead of containing the data values, it contains **True** or **False** values depending on whether each row satisfies the condition.
- 
+
 ### Using Boolean Series as Filters
- 
+
 Once you have a boolean Series (True/False values), you can use it to filter the original DataFrame. When you pass a boolean Series as an index to a DataFrame, pandas returns only the rows where the Series contains **True**, giving you the complete row data for those matches.
- 
+
 ### Inline Querying
- 
+
 Instead of creating a separate variable for the boolean Series, you can write the condition directly inline. This is more concise and readable, and produces the same result as creating an intermediate variable.
- 
+
 ### Displaying More Rows
- 
-By default, pandas displays only the first and last 5 rows of large DataFrames, with `...` in between. If you want to display more or all rows, you can use the `pd.option_context()` function with the `display_max_rows` parameter. You'll need to import `display` from `IPython`.
- 
+
+By default, pandas displays only the first and last 5 rows of large DataFrames, with `...` in between. If you want to display more or all rows, you can use the `pd.option_context()` function with the `display.max_rows` parameter. You'll need to import `display` from `IPython`.
+
 ### Complex Queries with Multiple Columns
- 
+
 You can create more sophisticated queries by combining conditions from multiple columns. For example, you can calculate a ratio between two columns and use that in your query condition. This allows you to find rows that meet complex criteria.
- 
+
 ### Adding New Columns
- 
+
 In addition to querying existing columns, you can add new calculated columns to your DataFrame. Simply assign a Series (which can be a calculation involving existing columns) to a new column name using bracket notation.
- 
+
 ### Dropping Columns
- 
+
 If you no longer need certain columns, you can remove them using the `.drop()` method. The `inplace=True` parameter tells pandas to modify the original DataFrame directly instead of creating a copy.
- 
+
 ### Practical Examples
- 
-Here are common querying and filtering operations:
- 
+
 ```python
 # Basic boolean query - returns True/False Series
 high_new_cases = covid_df.new_cases > 1000
 print(high_new_cases)  # Series of True/False values
- 
+
 # Use boolean Series to filter the DataFrame
 filtered_df = covid_df[high_new_cases]
 print(filtered_df)  # Only rows where new_cases > 1000
- 
+
 # Inline querying - write condition directly
 high_new_cases_df = covid_df[covid_df.new_cases > 1000]
- 
+
 # Display more rows than default (first 5 + last 5)
-from ipython.display import display
+from IPython.display import display
 import pandas as pd
- 
+
 with pd.option_context('display.max_rows', 100):
     display(covid_df[covid_df.new_cases > 1000])
- 
+
 # Complex query with multiple columns
 # Find days where positive rate was higher than average
 positive_rate_avg = covid_df.new_cases.sum() / covid_df.new_tests.sum()
 high_ratio_df = covid_df[covid_df.new_cases / covid_df.new_tests > positive_rate_avg]
- 
+
 # Add a new column with calculated values
 covid_df['positive_rate'] = covid_df.new_cases / covid_df.new_tests
- 
+
 # Drop a column from the DataFrame
 covid_df.drop(columns=['positive_rate'], inplace=True)
- 
+
 # Multiple conditions - rows meeting both criteria
 covid_df[(covid_df.new_cases > 1000) & (covid_df.new_deaths > 50)]
- 
+
 # Multiple conditions - rows meeting either criteria
 covid_df[(covid_df.new_cases > 1000) | (covid_df.new_deaths > 50)]
 ```
- 
+
 ### Quick Reference Table
- 
+
 | Operation | Purpose | Example | Result |
 |-----------|---------|---------|--------|
 | `df['col'] > value` | Create boolean filter | `covid_df.new_cases > 1000` | Series of True/False |
@@ -526,84 +526,86 @@ covid_df[(covid_df.new_cases > 1000) | (covid_df.new_deaths > 50)]
 | `pd.option_context()` | Temporarily change display settings | `pd.option_context('display.max_rows', 100)` | Context manager |
 | `df['new_col'] = calc` | Add calculated column | `covid_df['rate'] = covid_df.new_cases / covid_df.new_tests` | New column added |
 | `.drop(columns=[...])` | Remove columns | `covid_df.drop(columns=['col1'], inplace=True)` | Column removed |
-| `&` (AND operator) | Multiple conditions (both) | `(df['col1'] > 100) & (df['col2'] < 50)` | Combined filter |
-| `\|` (OR operator) | Multiple conditions (either) | `(df['col1'] > 100) \| (df['col2'] < 50)` | Combined filter |
+| `&` (AND operator) | Multiple conditions (both must be true) | `(df['col1'] > 100) & (df['col2'] < 50)` | Combined filter |
+| `\|` (OR operator) | Multiple conditions (either must be true) | `(df['col1'] > 100) \| (df['col2'] < 50)` | Combined filter |
+
+---
 
 ## Sorting Data and Handling Faulty Values
- 
+
 ### Basic Sorting with sort_values()
- 
+
 Sorting is a fundamental operation when working with data. The `.sort_values()` method allows you to order DataFrame rows based on the values in one or more columns. This is useful for ranking data, finding extremes (highest/lowest values), or organizing data for presentation.
- 
+
 The method returns a new DataFrame with rows sorted according to your specification. The original DataFrame remains unchanged unless you use the `inplace=True` parameter.
- 
+
 ### Ascending vs Descending Order
- 
+
 By default, `.sort_values()` sorts in ascending order (smallest to largest). To reverse this and sort in descending order (largest to smallest), use the `ascending=False` parameter.
- 
+
 For example, to find the 10 days with the highest number of cases, you would sort by the `new_cases` column in descending order and then use `.head(10)` to get the top 10 rows.
- 
+
 ### Identifying Faulty Data
- 
+
 When working with real-world data, you'll often encounter errors or anomalies. These can occur due to data entry mistakes, sensor errors, or system glitches. It's crucial to identify these faulty values before analysis.
- 
+
 For example, in a COVID dataset tracking daily cases, negative values would be physically impossible—cases cannot decrease below zero. Such values indicate an error that needs to be corrected.
- 
+
 ### Approaches to Handle Faulty Data
- 
+
 When you discover faulty values, you have several options for how to handle them:
- 
+
 1. **Replace with 0** - Assume the faulty entry should be zero
 2. **Replace with Column Average** - Use the mean of all values in that column
 3. **Replace with Adjacent Average** - Use the average of the previous and next values (useful for time-series data)
 4. **Drop the Row** - Remove the entire row if the data is unreliable
+
 Each approach has trade-offs:
 - **Zero replacement** is simple but may distort analysis
 - **Column average** preserves overall statistics but may not be contextually appropriate
 - **Adjacent average** works well for time-series data where values change gradually
 - **Dropping rows** removes the faulty data completely but may lose other valid information in that row
+
 The best approach depends on your data and analysis goals.
- 
+
 ### Practical Examples
- 
-Here are common sorting and data cleaning operations:
- 
+
 ```python
 # Basic sorting - ascending order (default)
 sorted_df = covid_df.sort_values('new_cases')
- 
+
 # Sorting in descending order - find highest values
 sorted_df = covid_df.sort_values('new_cases', ascending=False)
- 
+
 # Find the 10 days with highest number of cases
 top_10_cases = covid_df.sort_values('new_cases', ascending=False).head(10)
- 
+
 # Sort by multiple columns
 sorted_df = covid_df.sort_values(['new_cases', 'new_deaths'], ascending=False)
- 
+
 # Identify faulty data
 # For example, negative cases (which should never occur)
 faulty_rows = covid_df[covid_df.new_cases < 0]
- 
+
 # Approach 1: Replace faulty value with 0
 covid_df.at[172, 'new_cases'] = 0
- 
+
 # Approach 2: Replace with column average
 column_average = covid_df.new_cases.mean()
 covid_df.at[172, 'new_cases'] = column_average
- 
+
 # Approach 3: Replace with average of adjacent values (previous and next)
 covid_df.at[172, 'new_cases'] = (covid_df.at[171, 'new_cases'] + covid_df.at[173, 'new_cases']) / 2
- 
+
 # Approach 4: Drop the entire row
 covid_df.drop(172, inplace=True)
- 
+
 # Sort after cleaning to see results
 covid_df.sort_values('new_cases', ascending=False).head(10)
 ```
- 
+
 ### Quick Reference Table
- 
+
 | Operation | Purpose | Example | Result |
 |-----------|---------|---------|--------|
 | `.sort_values('col')` | Sort by column ascending | `covid_df.sort_values('new_cases')` | Sorted DataFrame |
@@ -615,3 +617,141 @@ covid_df.sort_values('new_cases', ascending=False).head(10)
 | `.at[row, 'col'] = value` | Replace single value | `covid_df.at[172, 'new_cases'] = 0` | Value replaced |
 | `.mean()` | Calculate column average | `covid_df.new_cases.mean()` | Scalar (average value) |
 | `.drop(row)` | Remove row | `covid_df.drop(172, inplace=True)` | Row removed |
+
+---
+
+## Working with Dates
+
+### Why Convert Date Columns?
+
+By default, pandas reads date columns as `object` type (plain strings). To unlock date-specific operations like extracting the year, month, or weekday, you need to convert the column to pandas' **datetime** type first.
+
+```python
+# Check the current type of the date column
+print(covid_df.date)         # Displays as plain strings
+print(covid_df.date.dtype)   # Output: object
+```
+
+### Converting to Datetime
+
+Use `pd.to_datetime()` to convert a column from `object` to `datetime64`:
+
+```python
+covid_df["date"] = pd.to_datetime(covid_df.date)
+```
+
+After this, pandas understands the column as actual dates and you can extract components from it.
+
+### Extracting Date Components
+
+Once converted, use `pd.DatetimeIndex()` to extract useful parts of the date into separate columns:
+
+```python
+covid_df["year"]    = pd.DatetimeIndex(covid_df.date).year
+covid_df["month"]   = pd.DatetimeIndex(covid_df.date).month
+covid_df["day"]     = pd.DatetimeIndex(covid_df.date).day
+covid_df["weekday"] = pd.DatetimeIndex(covid_df.date).weekday
+```
+
+**Weekday reference:**
+
+| Value | Day |
+|-------|-----|
+| 0 | Monday |
+| 1 | Tuesday |
+| 2 | Wednesday |
+| 3 | Thursday |
+| 4 | Friday |
+| 5 | Saturday |
+| 6 | Sunday |
+
+**Note:** The `.weekday` attribute follows Python's convention where Monday = 0 and Sunday = 6.
+
+### Filtering by Date Components
+
+With the extracted columns, you can filter data for any specific time period:
+
+```python
+# Filter for a specific month (e.g., May = month 5)
+covid_df_may = covid_df[covid_df.month == 5]
+
+# Filter for a specific year
+covid_df_2020 = covid_df[covid_df.year == 2020]
+
+# Filter for a specific weekday (e.g., Sunday = 6)
+covid_df_sundays = covid_df[covid_df.weekday == 6]
+```
+
+### Calculating Monthly Metrics
+
+Once filtered, you can select only the columns you need and aggregate them:
+
+```python
+# Step 1: Filter for the month
+covid_df_may = covid_df[covid_df.month == 5]
+
+# Step 2: Select only the relevant columns
+covid_df_may_metrics = covid_df_may[['new_cases', 'new_deaths', 'new_tests']]
+
+# Step 3: Sum them up
+covid_df_may_total = covid_df_may_metrics.sum()
+```
+
+Or do it all in one line:
+
+```python
+covid_df_may_total = covid_df[covid_df.month == 5][['new_cases', 'new_deaths', 'new_tests']].sum()
+```
+
+### Comparing Weekday vs Overall Averages
+
+A common analysis is checking whether a specific day of the week has higher/lower values than the overall average:
+
+```python
+# Overall mean
+overall_mean = covid_df.new_cases.mean()
+
+# Mean for Sundays only (weekday == 6)
+sunday_mean = covid_df[covid_df.weekday == 6].new_cases.mean()
+
+# Compare
+print(f"Overall avg cases: {overall_mean:.2f}")
+print(f"Sunday avg cases:  {sunday_mean:.2f}")
+print(f"Sundays higher? {sunday_mean > overall_mean}")
+```
+
+### Practical Examples
+
+```python
+# Convert date column to datetime type
+covid_df["date"] = pd.to_datetime(covid_df.date)
+
+# Extract date components into new columns
+covid_df["year"]    = pd.DatetimeIndex(covid_df.date).year
+covid_df["month"]   = pd.DatetimeIndex(covid_df.date).month
+covid_df["day"]     = pd.DatetimeIndex(covid_df.date).day
+covid_df["weekday"] = pd.DatetimeIndex(covid_df.date).weekday
+
+# Filter for May
+covid_df_may = covid_df[covid_df.month == 5]
+
+# Get May totals for key metrics
+covid_df_may_total = covid_df_may[['new_cases', 'new_deaths', 'new_tests']].sum()
+
+# Compare Sunday average vs overall average
+overall_mean = covid_df.new_cases.mean()
+sunday_mean  = covid_df[covid_df.weekday == 6].new_cases.mean()
+```
+
+### Quick Reference Table
+
+| Operation | Purpose | Example | Result |
+|-----------|---------|---------|--------|
+| `pd.to_datetime(df.col)` | Convert string to datetime | `pd.to_datetime(covid_df.date)` | datetime64 column |
+| `pd.DatetimeIndex(df.col).year` | Extract year | `pd.DatetimeIndex(covid_df.date).year` | Series of years |
+| `pd.DatetimeIndex(df.col).month` | Extract month (1–12) | `pd.DatetimeIndex(covid_df.date).month` | Series of months |
+| `pd.DatetimeIndex(df.col).day` | Extract day (1–31) | `pd.DatetimeIndex(covid_df.date).day` | Series of days |
+| `pd.DatetimeIndex(df.col).weekday` | Extract weekday (0=Mon, 6=Sun) | `pd.DatetimeIndex(covid_df.date).weekday` | Series of weekday ints |
+| `df[df.month == n]` | Filter by month | `covid_df[covid_df.month == 5]` | Filtered DataFrame |
+| `df[df.weekday == n]` | Filter by weekday | `covid_df[covid_df.weekday == 6]` | Sundays only |
+| `.mean()` | Average of a column | `covid_df.new_cases.mean()` | Scalar (float) |
