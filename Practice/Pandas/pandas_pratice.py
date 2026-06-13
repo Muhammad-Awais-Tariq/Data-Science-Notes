@@ -144,3 +144,17 @@ result_df.to_csv("results.csv", index=False)
 result_df.to_excel("results.xlsx", index=False)   
 result_df.to_json("results.json")                 
 result_df.to_parquet("results.parquet", index=False)  
+
+result_df.set_index('date', inplace=True)
+
+result_df.new_cases.plot()
+
+result_df.new_cases.plot()
+result_df.new_deaths.plot()
+
+death_rate = result_df.total_deaths / result_df.total_cases
+death_rate.plot(title="Death Rate Over Time")
+
+covid_month_df.new_cases.plot(kind="bar")
+
+covid_month_df.new_deaths.plot(kind="bar")
