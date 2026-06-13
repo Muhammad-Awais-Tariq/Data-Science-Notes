@@ -14,6 +14,9 @@
 11. [Sorting Data and Handling Faulty Values](#sorting-data-and-handling-faulty-values)
 12. [Working with Dates](#working-with-dates)
 13. [Grouping and Aggregation](#working-with-dates)
+14. [Merging Different DataFrames](#merging-different-dataframes)
+15. [Writing Data Back to Files](#writing-data-back-to-files)
+
 
 ---
 
