@@ -62,6 +62,6 @@ plt.show()
 
 **Output:**
 
-![Line Chart](Theory/Visualization/Figure_1.png)
+![Line Chart](Figure_1.png)
 
 The x-axis shows the index of each value (0, 1, 2...) and the y-axis shows the actual values. By default there are no labels or titles — those need to be added manually, which is covered in the next section.
