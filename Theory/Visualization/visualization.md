@@ -5,6 +5,7 @@
 2. [Importing the Modules](#importing-the-modules)
 3. [Line Charts](#line-charts)
 4. [Improving and Customizing Line Charts](#improving-and-customizing-line-charts)
+5. [Scatter Plots](#scatter-plots)
 
 ---
 
@@ -279,3 +280,123 @@ print(matplotlib.rcParams)
 ```
 
 **Note:** `rcParams` changes persist for the entire session. If you only want to change the style for one plot, use the individual arguments in `plt.plot()` instead.
+
+## Scatter Plots
+
+### Line Plot vs Scatter Plot
+
+A line plot works well when your data has a natural order or sequence — like values changing over time. A scatter plot is used instead when you want to explore the **relationship between two independent variables**, where order does not matter. Each point on a scatter plot represents one row of data, plotted by its x and y values.
+
+### Loading the Example Dataset
+
+Seaborn comes with several built-in datasets for practice. The **iris dataset** is a classic — it contains measurements of flower dimensions across three species:
+
+```python
+flower_df = sns.load_dataset("iris")
+```
+
+This loads a pandas DataFrame directly, the same as if you had used `pd.read_csv()`. You can use either approach with your own data.
+
+### Why Not a Line Plot for This Data?
+
+You might try plotting the relationship between sepal length and sepal width using a line plot first:
+
+```python
+plt.plot(flower_df.sepal_length, flower_df.sepal_width)
+plt.xlabel('Sepal Length')
+plt.ylabel('Sepal Width')
+plt.title('Sepal Dimensions')
+plt.show()
+```
+
+**Output:**
+
+![Line Plot of Iris Data](Figure_9.png)
+
+The result is a chaotic, tangled mess of lines. This is because the data has no meaningful order — the line just connects random points one after another. This is exactly when a scatter plot is the right choice instead.
+
+### Basic Scatter Plot
+
+Seaborn's `sns.scatterplot()` plots each row as an individual point. Seaborn automatically uses the column names as axis labels:
+
+```python
+sns.scatterplot(x=flower_df.sepal_length, y=flower_df.sepal_width)
+plt.show()
+```
+
+**Note:** Just like with Matplotlib, `plt.show()` is required to render the plot.
+
+**Output:**
+
+![Basic Scatter Plot](Figure_10.png)
+
+The scatter plot immediately makes it clear there is no strong linear relationship between sepal length and width — but you can start to see clusters forming, suggesting there may be distinct groups in the data.
+
+### Adding Hue to Show Groups
+
+When your data contains distinct groups or categories, you can color each point by its group using the `hue` parameter. This makes clusters and group-level patterns immediately visible. Use `s` to control the size of the points:
+
+```python
+sns.scatterplot(x=flower_df.sepal_length,
+                y=flower_df.sepal_width,
+                hue=flower_df.species,
+                s=100)
+plt.show()
+```
+
+**Output:**
+
+![Scatter Plot with Hue](Figure_11.png)
+
+Now each species is shown in a different color and the clusters that were barely visible before are now clearly separated. Seaborn automatically adds a legend for the hue groups.
+
+### Customizing with Matplotlib Functions
+
+Since Seaborn is built on top of Matplotlib, all the usual `plt` functions work on Seaborn plots too:
+
+```python
+plt.figure(figsize=(12, 6))
+
+sns.scatterplot(x=flower_df.sepal_length,
+                y=flower_df.sepal_width,
+                hue=flower_df.species,
+                s=100)
+
+plt.title("Sepal Dimensions by Species")
+plt.xlabel("Sepal Length")
+plt.ylabel("Sepal Width")
+plt.show()
+```
+
+### Passing the DataFrame Directly
+
+Instead of passing full Series (`flower_df.sepal_length`), you can pass just the column names as strings and supply the DataFrame separately using the `data` parameter. This is cleaner and less repetitive:
+
+```python
+plt.figure(figsize=(12, 6))
+
+sns.scatterplot(x='sepal_length',
+                y='sepal_width',
+                hue='species',
+                s=100,
+                data=flower_df)
+
+plt.title("Sepal Dimensions by Species")
+plt.show()
+```
+
+**Output:**
+
+![Scatter Plot with Data Parameter](Figure_11.png)
+
+Both approaches produce identical results — the `data` parameter is just the preferred style when working with DataFrames.
+
+### Quick Reference Table
+
+| Argument | Purpose | Example |
+|----------|---------|---------|
+| `x` | Column for x-axis | `x='sepal_length'` |
+| `y` | Column for y-axis | `y='sepal_width'` |
+| `hue` | Color points by category | `hue='species'` |
+| `s` | Size of each point | `s=100` |
+| `data` | The DataFrame to use | `data=flower_df` |
