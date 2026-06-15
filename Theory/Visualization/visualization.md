@@ -3,7 +3,7 @@
 ## Table of Contents
 1. [Why Visualization?](#why-visualization)
 2. [Importing the Modules](#importing-the-modules)
-
+3. [Line Charts](#line-charts)
 ---
 
 ## Why Visualization?
@@ -40,3 +40,28 @@ import seaborn as sns
 ```
 
 **Why `plt` and `sns`?** These are the standard aliases used universally — every tutorial, documentation page, and Stack Overflow answer uses them. Stick to these aliases to keep your code readable and consistent.
+
+## Line Charts
+
+### What is a Line Chart?
+
+A line chart is the most basic form of data visualization. It plots individual data points along an axis and connects them with a line, making it easy to see how a value changes over a sequence — most commonly over time.
+
+### Basic Line Chart
+
+To draw a line chart, pass a list of values to `plt.plot()` and call `plt.show()` to display it:
+
+```python
+yield_apples = [0.895, 0.91, 0.919, 0.926, 0.929, 0.931]
+
+plt.plot(yield_apples)
+plt.show()
+```
+
+`plt.plot()` draws the chart and `plt.show()` actually renders and displays it. Without `plt.show()`, nothing appears on screen.
+
+**Output:**
+
+![Line Chart](Theory/Visualization/Figure_1.png)
+
+The x-axis shows the index of each value (0, 1, 2...) and the y-axis shows the actual values. By default there are no labels or titles — those need to be added manually, which is covered in the next section.
