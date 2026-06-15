@@ -231,3 +231,51 @@ plt.show()
 ```
 
 **Note:** `plt.figure()` must always be called **before** `plt.plot()`, otherwise it opens a new empty figure instead of resizing the current one.
+
+### Enhancing Plots with Seaborn Styles
+
+Seaborn provides ready-made styles that instantly make Matplotlib plots look cleaner and more polished — without changing any of your plotting code. Just call `sns.set_style()` once before your plot:
+
+```python
+sns.set_style("whitegrid")
+
+plt.plot(years, yield_apples, marker='o')
+plt.plot(years, yield_oranges, marker='X')
+plt.xlabel('Year')
+plt.ylabel('Yield')
+plt.title("Crop Yields in Pakistan")
+plt.legend(["Apples", "Oranges"])
+plt.show()
+```
+
+**Output:**
+
+![Seaborn Style](Figure_8.png)
+
+Available styles: `"darkgrid"`, `"whitegrid"`, `"dark"`, `"white"`, and `"ticks"`. See the full reference and visual previews here:
+- [Seaborn Style Documentation](https://seaborn.pydata.org/tutorial/aesthetics.html)
+- [Visual Style Gallery](https://python-graph-gallery.com/104-seaborn-themes/)
+
+### Changing Matplotlib Default Parameters
+
+For finer control over global defaults — like font size, line width, or figure size — use `matplotlib.rcParams`. These are settings that apply to **every** plot in your script unless overridden individually:
+
+```python
+import matplotlib
+
+# Set default font size to 14 for all plots
+matplotlib.rcParams["font.size"] = 14
+
+# Other useful defaults
+matplotlib.rcParams["figure.figsize"] = (10, 6)   # Default figure size
+matplotlib.rcParams["lines.linewidth"] = 2         # Default line width
+matplotlib.rcParams["axes.grid"] = True            # Show grid by default
+```
+
+To see every parameter available, just print the full dictionary:
+
+```python
+print(matplotlib.rcParams)
+```
+
+**Note:** `rcParams` changes persist for the entire session. If you only want to change the style for one plot, use the individual arguments in `plt.plot()` instead.
