@@ -6,6 +6,7 @@
 3. [Line Charts](#line-charts)
 4. [Improving and Customizing Line Charts](#improving-and-customizing-line-charts)
 5. [Scatter Plots](#scatter-plots)
+6. [Histograms](#histograms)
 
 ---
 
@@ -400,3 +401,128 @@ Both approaches produce identical results — the `data` parameter is just the p
 | `hue` | Color points by category | `hue='species'` |
 | `s` | Size of each point | `s=100` |
 | `data` | The DataFrame to use | `data=flower_df` |
+
+## Histograms
+
+### What is a Histogram?
+
+A histogram represents the **distribution of a single variable** by grouping values into ranges called **bins** and showing how many data points fall into each bin. Unlike a bar chart which compares categories, a histogram answers the question: *"where are most of my values concentrated?"*
+
+We will use the iris dataset again:
+
+```python
+flower_df = sns.load_dataset("iris")
+```
+
+### Basic Histogram
+
+```python
+plt.title("Distribution of Sepal Width")
+plt.hist(flower_df.sepal_width)
+plt.show()
+```
+
+**Output:**
+
+![Basic Histogram](Figure_12.png)
+
+By default, Matplotlib creates **10 bins** and distributes all values across them. The x-axis shows the value ranges and the y-axis shows how many data points fall in each bin. So a bar at x=3.0 with height 37 means 37 flowers have a sepal width between 3.0 and 3.25.
+
+### Controlling the Number of Bins
+
+You can control how many bins are created by passing the `bins` argument. Fewer bins give a broader picture, more bins give finer detail. Adding `edgecolor='black'` draws a border around each bar so the bins are visually separated:
+
+```python
+plt.hist(flower_df.sepal_width, bins=5, edgecolor='black')
+plt.title("Distribution of Sepal Width")
+plt.show()
+```
+
+**Output:**
+
+![Histogram with 5 Bins](Figure_13.png)
+
+### Setting Exact Bin Boundaries with NumPy
+
+Instead of specifying a count, you can pass exact boundary points using `np.arange()`. This gives you full control over where each bin starts and ends:
+
+```python
+import numpy as np
+
+plt.hist(flower_df.sepal_width, bins=np.arange(2, 5, 0.25), edgecolor='black')
+plt.title("Distribution of Sepal Width")
+plt.show()
+```
+
+`np.arange(2, 5, 0.25)` generates points from 2 up to (but not including) 5, with a step of 0.25 — so each bin covers a range of 0.25 units.
+
+**Output:**
+
+![Histogram with NumPy Bins](Figure_14.png)
+
+### Unequal Bin Sizes
+
+You can also pass a manual list of boundary points to create bins of unequal size. This is useful when your data is not evenly spread and you want finer detail in a specific range:
+
+```python
+plt.hist(flower_df.sepal_width, bins=[1, 3, 4, 4.5], edgecolor='black')
+plt.title("Distribution of Sepal Width")
+plt.show()
+```
+
+This creates three bins of different sizes:
+
+| Bin | Range | Width |
+|-----|-------|-------|
+| 1 | 1.0 → 3.0 | 2.0 |
+| 2 | 3.0 → 4.0 | 1.0 |
+| 3 | 4.0 → 4.5 | 0.5 |
+
+### Stacked Histograms for Multiple Groups
+
+You can overlay histograms for multiple groups by passing a list of Series and setting `stacked=True`. First filter the DataFrame into separate groups:
+
+```python
+setosa_df    = flower_df[flower_df.species == 'setosa']
+versicolor_df = flower_df[flower_df.species == 'versicolor']
+virginica_df  = flower_df[flower_df.species == 'virginica']
+
+plt.title("Distribution of Sepal Width")
+plt.hist([setosa_df.sepal_width, versicolor_df.sepal_width, virginica_df.sepal_width],
+         bins=np.arange(2, 5, 0.25),
+         stacked=True,
+         edgecolor='black')
+plt.legend(['Setosa', 'Versicolor', 'Virginica'])
+plt.show()
+```
+
+**Output:**
+
+![Stacked Histogram](Figure_15.png)
+
+**How to read this chart:**
+
+Each bar is divided into colored segments — one per species. The segments are stacked on top of each other, so the **total height of the bar** is the combined count of all three species for that bin. To find the count for a single species in a bin, look at the height of just its colored segment:
+
+| Color | Species | How to read |
+|-------|---------|-------------|
+| 🟦 Blue | Setosa | Always at the bottom — its height is read directly from 0 |
+| 🟧 Orange | Versicolor | Stacked on top of blue — its count is the height of the orange segment alone |
+| 🟩 Green | Virginica | Stacked on top of orange — its count is the height of the green segment alone |
+
+```
+Total bar height = 50
+├── Green (Virginica)   → starts at 30, ends at 50 → count = 20
+├── Orange (Versicolor) → starts at 15, ends at 30 → count = 15
+└── Blue (Setosa)       → starts at 0,  ends at 15 → count = 15
+```
+
+### Quick Reference Table
+
+| Argument | Purpose | Example |
+|----------|---------|---------|
+| `bins=n` | Set number of bins | `bins=5` |
+| `bins=np.arange(a, b, step)` | Set exact bin boundaries | `bins=np.arange(2, 5, 0.25)` |
+| `bins=[...]` | Custom unequal bin sizes | `bins=[1, 3, 4, 4.5]` |
+| `edgecolor` | Border color between bins | `edgecolor='black'` |
+| `stacked=True` | Stack multiple histograms | `stacked=True` |
