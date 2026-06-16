@@ -10,6 +10,9 @@
 7. [Bar Charts](#bar-charts)
 8. [Heatmaps](#heatmaps)
 9. [Displaying Images with Matplotlib](#displaying-images-with-matplotlib)
+10. [Creating Multiple Plots with Subplots](#creating-multiple-plots-with-subplots)
+11. [Pair Plots for Multivariate Analysis](#pair-plots-for-multivariate-analysis)
+12. [Visualization Galleries and Resources](#visualization-galleries-and-resources)
 
 ---
 
@@ -931,3 +934,314 @@ print(img_array[125:135, 105:115])  # 10x10 patch of RGB values
 | `plt.axis('off')` | Hide axes and ticks | `plt.axis('off')` |
 | `img_array[r1:r2, c1:c2]` | Crop a region | `img_array[125:325, 105:305]` |
 | `img_array[row, col]` | Get RGB of a single pixel | `img_array[100, 200]` |
+
+---
+
+## Creating Multiple Plots with Subplots
+
+### What are Subplots?
+
+Sometimes you need to display multiple plots side by side or in a grid layout to compare different visualizations at once. Instead of creating separate figures for each plot, **subplots** allow you to arrange multiple plots in rows and columns within a single figure. This is especially useful for exploratory data analysis where you want to see several perspectives on your data simultaneously.
+
+### Basic Subplot Creation
+
+Use `plt.subplots()` to create a grid of plots. Pass the number of rows and columns you want:
+
+```python
+fig, axes = plt.subplots(2, 3)
+plt.show()
+```
+
+This creates a figure with 2 rows and 3 columns (6 plots total). The function returns two objects:
+
+- **`fig`** — the figure object that contains the entire grid
+- **`axes`** — a NumPy array of axis objects, one for each subplot
+
+**Output:**
+
+![Empty Subplots Grid](Graphs/Figure_28.png)
+
+### Understanding the Axes Array
+
+When you create a grid of subplots, `axes` is a 2D NumPy array. You access each subplot using its position `axes[row, col]`:
+
+```python
+fig, axes = plt.subplots(2, 3)
+
+# Access the subplot in row 0, column 0 (top-left)
+axes[0, 0].plot([1, 2, 3], [1, 4, 9])
+
+# Access the subplot in row 1, column 2 (bottom-right)
+axes[1, 2].scatter([1, 2, 3], [1, 4, 9])
+
+plt.show()
+```
+
+**Note:** Indices are **0-based** — the top-left plot is `axes[0, 0]`, not `axes[1, 1]`.
+
+### Adding Titles and Labels to Individual Subplots
+
+Use the axis object's methods to customize each subplot:
+
+```python
+fig, axes = plt.subplots(2, 2, figsize=(10, 8))
+
+# Top-left plot
+axes[0, 0].plot([1, 2, 3], [1, 4, 9], 'o-r')
+axes[0, 0].set_title("Quadratic Growth")
+axes[0, 0].set_xlabel("X")
+axes[0, 0].set_ylabel("Y")
+
+# Top-right plot
+axes[0, 1].bar(['A', 'B', 'C'], [10, 24, 36])
+axes[0, 1].set_title("Bar Chart")
+axes[0, 1].set_ylabel("Count")
+
+# Bottom-left plot
+axes[1, 0].hist([1, 2, 2, 3, 3, 3, 4, 4, 4, 4], bins=5, edgecolor='black')
+axes[1, 0].set_title("Distribution")
+axes[1, 0].set_xlabel("Value")
+axes[1, 0].set_ylabel("Frequency")
+
+# Bottom-right plot
+axes[1, 1].scatter([1, 2, 3], [1, 4, 9])
+axes[1, 1].set_title("Scatter Plot")
+
+plt.show()
+```
+
+**Output:**
+
+![Subplots with Titles](Graphs/Figure_28.png)
+
+### Controlling Spacing with tight_layout()
+
+When you have multiple subplots, labels and titles from adjacent plots can overlap and become unreadable. Use `plt.tight_layout()` to automatically adjust spacing:
+
+```python
+fig, axes = plt.subplots(2, 3, figsize=(12, 8))
+
+# ... add plots ...
+
+plt.tight_layout(pad=2)  # pad controls the padding between subplots
+plt.show()
+```
+
+The `pad` parameter controls how much space is added between subplots — higher values add more space. The default is usually adequate, but you can adjust it if needed.
+
+### Changing Figure Size
+
+Use the `figsize` parameter in `plt.subplots()` to control the overall figure dimensions. The values are `(width, height)` in inches:
+
+```python
+fig, axes = plt.subplots(2, 3, figsize=(15, 10))
+```
+
+For a 2-row, 3-column grid, a figsize of `(15, 10)` works well — roughly 5 inches per column and 5 inches per row.
+
+### Using Seaborn with Subplots
+
+Seaborn plots work with subplots by passing the `ax` parameter. This tells Seaborn which subplot to draw on:
+
+```python
+fig, axes = plt.subplots(2, 2, figsize=(12, 10))
+
+# Scatter plot in top-left
+sns.scatterplot(x='sepal_length', y='sepal_width', hue='species', 
+                data=flower_df, s=100, ax=axes[0, 0])
+axes[0, 0].set_title("Sepal Dimensions")
+
+# Bar plot in top-right
+sns.barplot(x='day', y='total_bill', hue='sex', 
+            data=tips_df, ax=axes[0, 1])
+axes[0, 1].set_title("Average Bill by Day and Gender")
+
+# Histogram in bottom-left
+axes[1, 0].hist(flower_df.sepal_width, bins=15, edgecolor='black', color='skyblue')
+axes[1, 0].set_title("Sepal Width Distribution")
+axes[1, 0].set_xlabel("Sepal Width")
+axes[1, 0].set_ylabel("Frequency")
+
+# Heatmap in bottom-right
+flights_df_pivot = sns.load_dataset('flights').pivot(columns='year', index='month', values='passengers')
+sns.heatmap(flights_df_pivot, annot=False, cmap='YlOrRd', ax=axes[1, 1])
+axes[1, 1].set_title("Flight Passengers Over Time")
+
+plt.tight_layout()
+plt.show()
+```
+
+**Output:**
+
+![Mixed Seaborn Subplots](Graphs/Figure_29.png)
+
+**Key points:**
+
+- Always pass `ax=axes[row, col]` to tell Seaborn where to plot
+- You can still use `plt` functions like `plt.tight_layout()` for the entire figure
+- Individual axis objects use their own methods: `set_title()`, `set_xlabel()`, etc.
+
+### Complete Example: Multi-Chart Dashboard
+
+Here's a complete example that demonstrates all subplot features together:
+
+```python
+import matplotlib.pyplot as plt
+import seaborn as sns
+import numpy as np
+from PIL import Image
+
+# Load datasets
+flower_df = sns.load_dataset("iris")
+tips_df = sns.load_dataset("tips")
+flights_df = sns.load_dataset('flights')
+flights_df_pivot = flights_df.pivot(columns='year', index='month', values='passengers')
+
+# Prepare crop data
+yield_apples = [0.895, 0.91, 0.919, 0.926, 0.929, 0.931]
+yield_oranges = [0.925, 0.921, 0.900, 0.895, 0.890, 0.885]
+years = [2010, 2011, 2012, 2013, 2014, 2016]
+
+# Create 2x3 grid
+fig, axes = plt.subplots(2, 3, figsize=(16, 10))
+
+# [0, 0] - Crop Yields Line Chart
+axes[0, 0].plot(years, yield_oranges, 'o--r', linewidth=2, label='Oranges')
+axes[0, 0].plot(years, yield_apples, 's-b', linewidth=2, label='Apples')
+axes[0, 0].set_title("Crop Yields Over Time", fontsize=12, fontweight='bold')
+axes[0, 0].set_xlabel("Year")
+axes[0, 0].set_ylabel("Yield")
+axes[0, 0].legend()
+axes[0, 0].grid(True, alpha=0.3)
+
+# [0, 1] - Sepal Dimensions Scatter Plot
+sns.scatterplot(x='sepal_length', y='sepal_width', hue='species', 
+                data=flower_df, s=100, ax=axes[0, 1], palette='Set2')
+axes[0, 1].set_title("Sepal Dimensions by Species", fontsize=12, fontweight='bold')
+
+# [0, 2] - Sepal Width Distribution Histogram
+setosa_df = flower_df[flower_df.species == 'setosa']
+versicolor_df = flower_df[flower_df.species == 'versicolor']
+virginica_df = flower_df[flower_df.species == 'virginica']
+
+axes[0, 2].hist([setosa_df.sepal_width, versicolor_df.sepal_width, virginica_df.sepal_width],
+                bins=np.arange(2, 5, 0.25), stacked=True, edgecolor='black', 
+                label=['Setosa', 'Versicolor', 'Virginica'])
+axes[0, 2].set_title("Sepal Width Distribution", fontsize=12, fontweight='bold')
+axes[0, 2].set_xlabel("Sepal Width")
+axes[0, 2].set_ylabel("Frequency")
+axes[0, 2].legend()
+
+# [1, 0] - Restaurant Bills Bar Chart
+sns.barplot(x='day', y='total_bill', hue='sex', data=tips_df, ax=axes[1, 0], palette='Set1')
+axes[1, 0].set_title("Average Restaurant Bill by Day and Gender", fontsize=12, fontweight='bold')
+axes[1, 0].set_ylabel("Total Bill ($)")
+
+# [1, 1] - Flight Traffic Heatmap
+sns.heatmap(flights_df_pivot, fmt='d', annot=True, cmap='YlOrRd', 
+            ax=axes[1, 1], cbar_kws={'label': 'Passengers'})
+axes[1, 1].set_title("Flight Passengers by Month and Year", fontsize=12, fontweight='bold')
+axes[1, 1].set_ylabel("Month")
+
+# [1, 2] - Empty for demonstration (could add an image here)
+axes[1, 2].text(0.5, 0.5, 'Ready for\nMore Data!', 
+                ha='center', va='center', fontsize=16, fontweight='bold',
+                transform=axes[1, 2].transAxes)
+axes[1, 2].set_xticks([])
+axes[1, 2].set_yticks([])
+axes[1, 2].set_title("Dashboard Summary", fontsize=12, fontweight='bold')
+
+plt.tight_layout(pad=2)
+plt.show()
+```
+
+**Output:**
+
+![Complete Dashboard](Graphs/Figure_30.png)
+
+This example shows:
+- Line charts with multiple series
+- Scatter plots with Seaborn
+- Stacked histograms
+- Bar charts with grouping
+- Heatmaps with annotations
+- Proper spacing and formatting
+
+### Subplots Quick Reference
+
+| Operation | Purpose | Example |
+|-----------|---------|---------|
+| `fig, axes = plt.subplots(rows, cols)` | Create grid of subplots | `plt.subplots(2, 3)` |
+| `figsize=(width, height)` | Set figure dimensions | `figsize=(12, 8)` |
+| `axes[row, col].plot()` | Plot on specific subplot | `axes[0, 1].plot(x, y)` |
+| `axes[row, col].set_title()` | Add subplot title | `axes[0, 0].set_title("Title")` |
+| `axes[row, col].set_xlabel()` | Add x-axis label | `axes[0, 0].set_xlabel("X")` |
+| `axes[row, col].set_ylabel()` | Add y-axis label | `axes[0, 0].set_ylabel("Y")` |
+| `sns.barplot(..., ax=axes[0, 0])` | Use Seaborn with subplots | Pass `ax` parameter |
+| `plt.tight_layout(pad=2)` | Auto-adjust spacing | `tight_layout(pad=2)` |
+
+---
+
+## Pair Plots for Multivariate Analysis
+
+### What is a Pair Plot?
+
+A **pair plot** is a powerful visualization tool for exploring relationships across multiple variables simultaneously. It creates a grid where every numeric column is plotted against every other numeric column. The diagonal shows the distribution of each variable, while the off-diagonal cells show scatter plots of variable relationships.
+
+### Creating a Pair Plot
+
+Seaborn makes pair plots incredibly simple with a single function:
+
+```python
+import seaborn as sns
+
+flower_df = sns.load_dataset("iris")
+sns.pairplot(data=flower_df)
+plt.show()
+```
+
+This automatically creates a grid of plots for every numeric column in the DataFrame, with no additional code needed.
+
+### Coloring by Category with Hue
+
+To see how groups separate across all variables, use the `hue` parameter:
+
+```python
+sns.pairplot(data=flower_df, hue='species')
+plt.show()
+```
+
+Now each species is shown in a different color across all subplots, making it easy to see which variables best separate the groups.
+
+### Quick Reference
+
+| Parameter | Purpose | Example |
+|-----------|---------|---------|
+| `data` | The DataFrame to analyze | `data=flower_df` |
+| `hue` | Color points by category | `hue='species'` |
+| `diag_kind` | Plot type on diagonal | `'hist'` or `'kde'` |
+
+---
+
+## Visualization Galleries and Resources
+
+### Official Documentation and References
+
+When you want to explore more chart types, customize plots, or troubleshoot visualization issues, these resources are invaluable:
+
+**Matplotlib:**
+- [Matplotlib Official Gallery](https://matplotlib.org/stable/gallery/index.html) — Browse hundreds of examples with code
+- [Matplotlib Documentation](https://matplotlib.org/stable/contents.html) — Complete API reference
+- [Matplotlib Cheat Sheet](https://matplotlib.org/cheatsheets/) — Quick reference for common tasks
+
+**Seaborn:**
+- [Seaborn Gallery](https://seaborn.pydata.org/examples.html) — Examples of all plot types with explanations
+- [Seaborn Documentation](https://seaborn.pydata.org/) — Full API reference and tutorials
+- [Seaborn Figure Aesthetics](https://seaborn.pydata.org/tutorial/aesthetics.html) — Learn about styling and themes
+
+**Python Graph Gallery:**
+- [Python Graph Gallery](https://python-graph-gallery.com/) — Thousands of reproducible chart examples across all libraries
+- Organized by chart type with variations and customizations
+- Great for finding inspiration and copy-paste-ready code
+
+---
