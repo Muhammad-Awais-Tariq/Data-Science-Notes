@@ -40,7 +40,12 @@ import numpy as np
 # plt.bar(years , yield_oranges , bottom = yield_apples)
 # plt.show()
 
-tips_df = sns.load_dataset("tips")
+# tips_df = sns.load_dataset("tips")
 # sns.barplot(x = 'day' , y ='total_bill' , hue = 'sex' , data= tips_df)
-sns.barplot(y = 'day' , x ='total_bill' , hue = 'smoker' , data= tips_df)
+# sns.barplot(y = 'day' , x ='total_bill' , hue = 'smoker' , data= tips_df)
+# plt.show()
+
+
+flights_df = sns.load_dataset('flights').pivot(columns="year" , index="month" , values="passengers")
+sns.heatmap(flights_df , fmt="d" , annot=True , cmap="Blues")
 plt.show()
