@@ -8,6 +8,7 @@
 5. [Scatter Plots](#scatter-plots)
 6. [Histograms](#histograms)
 7. [Bar Charts](#bar-charts)
+8. [Heatmaps](#heatmaps)
 
 ---
 
@@ -678,3 +679,139 @@ plt.show()
 | `sns.barplot(x, y, data)` | Auto-averaged bar chart | `sns.barplot(x='day', y='total_bill', data=tips_df)` |
 | `hue='col'` | Split bars by category | `hue='sex'` |
 | Swap `x` and `y` | Horizontal bar chart | `y='day', x='total_bill'` |
+
+## Heatmaps
+
+### What is a Heatmap?
+
+A heatmap visualizes **2D data** — data that has two dimensions like rows and columns — by replacing numbers with colors. Instead of reading individual values, you scan the color intensity to instantly spot patterns, peaks, and trends across both dimensions at once.
+
+### Loading the Dataset
+
+We will use the `flights` dataset built into Seaborn, which contains monthly passenger counts (in thousands) for each year from 1949 to 1960:
+
+```python
+flights_df = sns.load_dataset('flights')
+```
+
+### Why Not a Line Chart Here?
+
+You can plot this data as a line chart, but with 12 months across multiple years the lines overlap and become hard to read:
+
+```python
+sns.lineplot(x='year', y='passengers', hue='month', data=flights_df)
+plt.show()
+```
+
+**Output:**
+
+![Flights Line Chart](Graphs/Figure_22.png)
+
+The lines go up and down and overlap each other — you can see that passenger numbers are generally increasing but it is very hard to spot monthly patterns or compare specific months across years.
+
+### Converting to a Matrix with pivot()
+
+A heatmap requires the data to be in **matrix format** — where rows are one dimension, columns are another, and each cell contains a single value. The `pivot()` method reshapes the DataFrame into this format:
+
+```python
+flights_df = sns.load_dataset('flights').pivot(columns='year', index='month', values='passengers')
+```
+
+**What `pivot()` does:**
+
+| Argument | Purpose | In this example |
+|----------|---------|----------------|
+| `index` | What becomes the row labels | `month` — each row is one month |
+| `columns` | What becomes the column labels | `year` — each column is one year |
+| `values` | What fills the cells | `passengers` — each cell is the count |
+
+Before `pivot()`, the data looks like this:
+
+```
+   year  month  passengers
+0  1949    Jan         112
+1  1949    Feb         118
+2  1949    Mar         132
+...
+```
+
+After `pivot()`, it becomes a proper matrix:
+
+```
+year   1949  1950  1951  ...
+month
+Jan     112   115   145  ...
+Feb     118   126   150  ...
+Mar     132   141   178  ...
+...
+```
+
+Now each cell has exactly one value — the passenger count for that specific month and year combination.
+
+### Basic Heatmap
+
+```python
+sns.heatmap(flights_df)
+plt.title("Flight Passengers by Month and Year")
+plt.show()
+```
+
+**Output:**
+
+![Basic Heatmap](Graphs/Figure_23.png)
+
+**How to read it:**
+
+- **Darker colors** = lower passenger counts
+- **Brighter/lighter colors** = higher passenger counts
+- **Reading across a row** (left to right) shows how a specific month changes year over year
+- **Reading down a column** (top to bottom) shows how months compare within a single year
+
+From this heatmap two trends are immediately visible that would have been hard to spot in the line chart:
+1. **Every year is brighter than the last** — passenger numbers grow consistently year over year
+2. **June to October is always the brightest band** — these months are consistently the peak travel period across all years
+
+### Heatmap with Values and Custom Colors
+
+You can display the actual numbers inside each cell and customize the color scheme:
+
+```python
+sns.heatmap(flights_df, annot=True, fmt='d', cmap='Blues')
+plt.title("Flight Passengers by Month and Year")
+plt.show()
+```
+
+**Output:**
+
+![Annotated Heatmap](Graphs/Figure_24.png)
+
+**What each argument does:**
+
+| Argument | Purpose | Example Value |
+|----------|---------|--------------|
+| `annot=True` | Show the actual number inside each cell | `True` / `False` |
+| `fmt='d'` | Format the numbers as integers (no decimals) | `'d'` for int, `'.1f'` for 1 decimal |
+| `cmap` | Color scheme to use | `'Blues'`, `'Reds'`, `'coolwarm'`, `'YlOrRd'` |
+
+**Note on `fmt`:** The `fmt` argument only works when `annot=True` — it controls how the annotated numbers are displayed. Without `fmt='d'`, numbers may show as floats like `112.0` instead of `112`.
+
+**Useful `cmap` options:**
+
+| cmap | Best used for |
+|------|--------------|
+| `'Blues'` | Single direction data (low to high) |
+| `'Reds'` | Highlighting high values |
+| `'coolwarm'` | Data with a meaningful midpoint (negative to positive) |
+| `'YlOrRd'` | Yellow to red, good for intensity |
+| `'viridis'` | Colorblind-friendly default |
+
+### Quick Reference Table
+
+| Operation | Purpose | Example |
+|-----------|---------|---------|
+| `.pivot(columns, index, values)` | Reshape data into matrix format | `.pivot(columns='year', index='month', values='passengers')` |
+| `sns.heatmap(df)` | Basic heatmap | `sns.heatmap(flights_df)` |
+| `annot=True` | Show values inside cells | `sns.heatmap(df, annot=True)` |
+| `fmt='d'` | Format cell values as integers | `sns.heatmap(df, annot=True, fmt='d')` |
+| `cmap='Blues'` | Set color scheme | `sns.heatmap(df, cmap='Blues')` |
+| `plt.title()` | Add a title | `plt.title("Flight Passengers")` |
