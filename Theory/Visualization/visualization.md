@@ -815,3 +815,118 @@ plt.show()
 | `fmt='d'` | Format cell values as integers | `sns.heatmap(df, annot=True, fmt='d')` |
 | `cmap='Blues'` | Set color scheme | `sns.heatmap(df, cmap='Blues')` |
 | `plt.title()` | Add a title | `plt.title("Flight Passengers")` |
+
+## Displaying Images with Matplotlib
+
+### Why Matplotlib for Images?
+
+Matplotlib is not just for charts and graphs — it can also load, display, and manipulate images. Under the hood, every image is just a grid of numbers representing pixel colors, which means NumPy and Matplotlib can work with them the same way they work with any other data.
+
+### Loading an Image
+
+Use the **Python Imaging Library (PIL)** to load an image from disk:
+
+```python
+from PIL import Image
+import numpy as np
+
+img = Image.open("image.png")
+```
+
+**Note:** PIL requires Python 3.4 or higher. It is available via the `Pillow` package — install it with `pip install Pillow` if you don't have it already.
+
+### How Images are Stored as Arrays
+
+Any image loaded with PIL can be converted into a **3D NumPy array**:
+
+```python
+img_array = np.array(img)
+```
+
+The array has the shape `(height, width, 3)` — the three dimensions represent:
+
+| Dimension | Meaning | Example |
+|-----------|---------|---------|
+| First | Height (rows of pixels) | 400 pixels tall |
+| Second | Width (columns of pixels) | 600 pixels wide |
+| Third | Color channels (RGB) | 3 values: Red, Green, Blue |
+
+So `img_array[100, 200]` gives you the RGB values of the pixel at row 100, column 200 — something like `[255, 128, 0]` for an orange pixel.
+
+### Displaying an Image
+
+Use `plt.imshow()` to display the image:
+
+```python
+plt.imshow(img)
+plt.show()
+```
+
+**Output:**
+
+![Image with Axes](Graphs/Figure_25.png)
+
+By default, Matplotlib shows the x and y axes alongside the image. The axis numbers represent **pixel coordinates** — x is the column (horizontal position) and y is the row (vertical position) of each pixel.
+
+### Turning Off Axes and Grid Lines
+
+For a cleaner display without the pixel coordinate axes and grid lines:
+
+```python
+plt.imshow(img)
+plt.grid(False)
+plt.axis('off')
+plt.show()
+```
+
+**Output:**
+
+![Image without Axes](Graphs/Figure_26.png)
+
+| Function | Purpose |
+|----------|---------|
+| `plt.grid(False)` | Hides the grid lines overlaid on the image |
+| `plt.axis('off')` | Hides the x and y axis labels and ticks entirely |
+
+### Cropping by Slicing the Array
+
+Since the image is just a NumPy array, you can crop it using standard array slicing. The format is `img_array[row_start:row_end, col_start:col_end]`:
+
+```python
+plt.imshow(img_array[125:325, 105:305])
+plt.axis('off')
+plt.show()
+```
+
+**Output:**
+
+![Cropped Image](Graphs/Figure_27.png)
+
+This slices rows 125 to 325 (200 pixels tall) and columns 105 to 305 (200 pixels wide), effectively cropping a 200×200 section out of the original image.
+
+### Inspecting Pixel Values
+
+You can read the RGB values of any pixel or region directly from the array:
+
+```python
+# Single pixel at row 100, column 200
+print(img_array[100, 200])        # Output: [R, G, B]
+
+# All pixels in a row
+print(img_array[100])             # Output: array of [R, G, B] for every column
+
+# A region of pixels
+print(img_array[125:135, 105:115])  # 10x10 patch of RGB values
+```
+
+### Quick Reference Table
+
+| Operation | Purpose | Example |
+|-----------|---------|---------|
+| `Image.open("file")` | Load image from disk | `Image.open("photo.png")` |
+| `np.array(img)` | Convert image to NumPy array | `img_array = np.array(img)` |
+| `plt.imshow(img)` | Display the image | `plt.imshow(img)` |
+| `plt.grid(False)` | Hide grid lines | `plt.grid(False)` |
+| `plt.axis('off')` | Hide axes and ticks | `plt.axis('off')` |
+| `img_array[r1:r2, c1:c2]` | Crop a region | `img_array[125:325, 105:305]` |
+| `img_array[row, col]` | Get RGB of a single pixel | `img_array[100, 200]` |
