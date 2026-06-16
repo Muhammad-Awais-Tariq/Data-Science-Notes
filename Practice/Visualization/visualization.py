@@ -15,7 +15,7 @@ import numpy as np
 # plt.legend(["Oranges","Apples"])
 # plt.show()
 
-flower_df = sns.load_dataset("iris")
+# flower_df = sns.load_dataset("iris")
 # sns.scatterplot(x=flower_df.sepal_length , y=flower_df.sepal_width , hue = flower_df.species , s=100)
 # plt.show()
 # plt.plot(flower_df.sepal_length , flower_df.sepal_width)
@@ -26,11 +26,21 @@ flower_df = sns.load_dataset("iris")
 # plt.hist(flower_df.sepal_width , bins =np.arange(2 , 5 ,0.25) , edgecolor='black')
 # plt.show()
 
-setosa_df = flower_df[flower_df.species == 'setosa']
-versicolor_df = flower_df[flower_df.species == 'versicolor']
-virginica_df = flower_df[flower_df.species == 'virginica']
+# setosa_df = flower_df[flower_df.species == 'setosa']
+# versicolor_df = flower_df[flower_df.species == 'versicolor']
+# virginica_df = flower_df[flower_df.species == 'virginica']
 
-plt.title("Distribution of sepal width")
-plt.hist([setosa_df.sepal_width , versicolor_df.sepal_width , virginica_df.sepal_width] , bins =np.arange(2 , 5 ,0.25) , stacked = True , edgecolor='black' )
-plt.legend(['setosa' , 'versicolor' , 'virginica'])
+# plt.title("Distribution of sepal width")
+# plt.hist([setosa_df.sepal_width , versicolor_df.sepal_width , virginica_df.sepal_width] , bins =np.arange(2 , 5 ,0.25) , stacked = True , edgecolor='black' )
+# plt.legend(['setosa' , 'versicolor' , 'virginica'])
+# plt.show()
+
+# plt.bar(years , yield_apples)
+# plt.plot(years , yield_apples , 'o--r')
+# plt.bar(years , yield_oranges , bottom = yield_apples)
+# plt.show()
+
+tips_df = sns.load_dataset("tips")
+# sns.barplot(x = 'day' , y ='total_bill' , hue = 'sex' , data= tips_df)
+sns.barplot(y = 'day' , x ='total_bill' , hue = 'smoker' , data= tips_df)
 plt.show()
