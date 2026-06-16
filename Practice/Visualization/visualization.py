@@ -1,6 +1,7 @@
 import matplotlib.pyplot as plt
 import seaborn as sns
 import numpy as np
+from PIL import Image
 
 # sns.set_style("whitegrid")
 
@@ -46,6 +47,14 @@ import numpy as np
 # plt.show()
 
 
-flights_df = sns.load_dataset('flights').pivot(columns="year" , index="month" , values="passengers")
-sns.heatmap(flights_df , fmt="d" , annot=True , cmap="Blues")
+# flights_df = sns.load_dataset('flights').pivot(columns="year" , index="month" , values="passengers")
+# sns.heatmap(flights_df , fmt="d" , annot=True , cmap="Blues")
+# plt.show()
+
+img = Image.open("image (16).png")
+img_array  = np.array(img)
+plt.imshow(img_array[125:325 , 105:305])
+plt.grid(False)
+plt.axis('off')
 plt.show()
+# print(img_array)
