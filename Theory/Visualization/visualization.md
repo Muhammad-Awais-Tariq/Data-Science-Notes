@@ -7,6 +7,7 @@
 4. [Improving and Customizing Line Charts](#improving-and-customizing-line-charts)
 5. [Scatter Plots](#scatter-plots)
 6. [Histograms](#histograms)
+7. [Bar Charts](#bar-charts)
 
 ---
 
@@ -68,7 +69,7 @@ plt.show()
 
 **Output:**
 
-![Line Chart](Figure_1.png)
+![Line Chart](Graphs/Figure_1.png)
 
 The x-axis shows the index of each value (0, 1, 2...) and the y-axis shows the actual values. By default there are no labels or titles — those need to be added manually, which is covered in the next section.
 
@@ -90,7 +91,7 @@ plt.show()
 
 **Output:**
 
-![Line Chart with Years](Figure_2.png)
+![Line Chart with Years](Graphs/Figure_2.png)
 
 ### Adding Axis Labels
 
@@ -105,7 +106,7 @@ plt.show()
 
 **Output:**
 
-![Line Chart with Labels](Figure_3.png)
+![Line Chart with Labels](Graphs/Figure_3.png)
 
 **Note:** Any function you call after `plt.plot()` applies to the same plot until `plt.show()` is called.
 
@@ -127,7 +128,7 @@ plt.show()
 
 **Output:**
 
-![Multiple Lines](Figure_4.png)
+![Multiple Lines](Graphs/Figure_4.png)
 
 ### Adding a Title and Legend
 
@@ -145,7 +146,7 @@ plt.show()
 
 **Output:**
 
-![Title and Legend](Figure_5.png)
+![Title and Legend](Graphs/Figure_5.png)
 
 ### Adding Markers
 
@@ -163,7 +164,7 @@ plt.show()
 
 **Output:**
 
-![Markers](Figure_6.png)
+![Markers](Graphs/Figure_6.png)
 
 You can use any marker symbol from the full list here: [Matplotlib Markers Reference](https://matplotlib.org/stable/api/markers_api.html)
 
@@ -185,7 +186,7 @@ plt.plot(years, yield_oranges, 'sb')
 
 **Output:**
 
-![Line Style Shorthand](Figure_7.png)
+![Line Style Shorthand](Graphs/Figure_7.png)
 
 ### Customizing Line and Marker Appearance
 
@@ -252,7 +253,7 @@ plt.show()
 
 **Output:**
 
-![Seaborn Style](Figure_8.png)
+![Seaborn Style](Graphs/Figure_8.png)
 
 Available styles: `"darkgrid"`, `"whitegrid"`, `"dark"`, `"white"`, and `"ticks"`. See the full reference and visual previews here:
 - [Seaborn Style Documentation](https://seaborn.pydata.org/tutorial/aesthetics.html)
@@ -312,7 +313,7 @@ plt.show()
 
 **Output:**
 
-![Line Plot of Iris Data](Figure_9.png)
+![Line Plot of Iris Data](Graphs/Figure_9.png)
 
 The result is a chaotic, tangled mess of lines. This is because the data has no meaningful order — the line just connects random points one after another. This is exactly when a scatter plot is the right choice instead.
 
@@ -329,7 +330,7 @@ plt.show()
 
 **Output:**
 
-![Basic Scatter Plot](Figure_10.png)
+![Basic Scatter Plot](Graphs/Figure_10.png)
 
 The scatter plot immediately makes it clear there is no strong linear relationship between sepal length and width — but you can start to see clusters forming, suggesting there may be distinct groups in the data.
 
@@ -347,7 +348,7 @@ plt.show()
 
 **Output:**
 
-![Scatter Plot with Hue](Figure_11.png)
+![Scatter Plot with Hue](Graphs/Figure_11.png)
 
 Now each species is shown in a different color and the clusters that were barely visible before are now clearly separated. Seaborn automatically adds a legend for the hue groups.
 
@@ -388,7 +389,7 @@ plt.show()
 
 **Output:**
 
-![Scatter Plot with Data Parameter](Figure_11.png)
+![Scatter Plot with Data Parameter](Graphs/Figure_11.png)
 
 Both approaches produce identical results — the `data` parameter is just the preferred style when working with DataFrames.
 
@@ -424,7 +425,7 @@ plt.show()
 
 **Output:**
 
-![Basic Histogram](Figure_12.png)
+![Basic Histogram](Graphs/Figure_12.png)
 
 By default, Matplotlib creates **10 bins** and distributes all values across them. The x-axis shows the value ranges and the y-axis shows how many data points fall in each bin. So a bar at x=3.0 with height 37 means 37 flowers have a sepal width between 3.0 and 3.25.
 
@@ -440,7 +441,7 @@ plt.show()
 
 **Output:**
 
-![Histogram with 5 Bins](Figure_13.png)
+![Histogram with 5 Bins](Graphs/Figure_13.png)
 
 ### Setting Exact Bin Boundaries with NumPy
 
@@ -458,7 +459,7 @@ plt.show()
 
 **Output:**
 
-![Histogram with NumPy Bins](Figure_14.png)
+![Histogram with NumPy Bins](Graphs/Figure_14.png)
 
 ### Unequal Bin Sizes
 
@@ -498,7 +499,7 @@ plt.show()
 
 **Output:**
 
-![Stacked Histogram](Figure_15.png)
+![Stacked Histogram](Graphs/Figure_15.png)
 
 **How to read this chart:**
 
@@ -526,3 +527,4 @@ Total bar height = 50
 | `bins=[...]` | Custom unequal bin sizes | `bins=[1, 3, 4, 4.5]` |
 | `edgecolor` | Border color between bins | `edgecolor='black'` |
 | `stacked=True` | Stack multiple histograms | `stacked=True` |
+
