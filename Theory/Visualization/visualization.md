@@ -9,6 +9,7 @@
 6. [Histograms](#histograms)
 7. [Bar Charts](#bar-charts)
 8. [Heatmaps](#heatmaps)
+9. [Displaying Images with Matplotlib](#displaying-images-with-matplotlib)
 
 ---
 
