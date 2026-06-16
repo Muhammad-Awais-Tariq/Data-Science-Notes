@@ -528,3 +528,153 @@ Total bar height = 50
 | `edgecolor` | Border color between bins | `edgecolor='black'` |
 | `stacked=True` | Stack multiple histograms | `stacked=True` |
 
+## Bar Charts
+
+### Line Charts vs Bar Charts
+
+A line chart is great for showing **trends** — the rise and fall of values over time. But when you want to compare **exact values** across categories, a bar chart is the better choice. Each bar's height directly represents the value for that category, making comparisons much easier to read at a glance.
+
+Like histograms, bar charts can also be stacked on top of each other to show multiple groups within the same chart.
+
+### Basic Bar Chart
+
+Here is the same apple yield data plotted first as a line chart, then as a bar chart:
+
+**Line chart:**
+```python
+yield_apples = [0.895, 0.91, 0.919, 0.926, 0.929, 0.931]
+years = [2010, 2011, 2012, 2013, 2014, 2016]
+
+plt.plot(years, yield_apples)
+plt.show()
+```
+
+**Output:**
+
+![Line Chart](Graphs/Figure_3.png)
+
+**Bar chart:**
+```python
+plt.bar(years, yield_apples)
+plt.show()
+```
+
+**Output:**
+
+![Basic Bar Chart](Graphs/Figure_16.png)
+
+With the bar chart you can now clearly compare the exact yield value for each individual year, which was harder to read from the line alone.
+
+### Combining Bar and Line Charts
+
+You can plot both a bar chart and a line chart on the same figure. This gives you the best of both — the bars show exact values while the line shows the overall trend:
+
+```python
+plt.bar(years, yield_apples)
+plt.plot(years, yield_apples, 'o--r')
+plt.show()
+```
+
+**Output:**
+
+![Bar and Line Combined](Graphs/Figure_17.png)
+
+### Stacked Bar Charts
+
+Just like histograms, bar charts can be stacked. Use the `bottom` parameter to tell Matplotlib where the second bar should start — which is the top of the first bar:
+
+```python
+yield_oranges = [0.925, 0.921, 0.900, 0.895, 0.890, 0.885]
+
+plt.bar(years, yield_apples)
+plt.bar(years, yield_oranges, bottom=yield_apples)
+plt.legend(['Apples', 'Oranges'])
+plt.show()
+```
+
+**Output:**
+
+![Stacked Bar Chart](Graphs/Figure_18.png)
+
+The `bottom=yield_apples` argument tells the orange bars to start from the top of the apple bars instead of from zero, stacking them on top.
+
+### Bar Chart with Averages
+
+A common use case is plotting the average of a value grouped by a category. Using the `tips` dataset that comes built into Seaborn:
+
+```python
+tips_df = sns.load_dataset("tips")
+```
+
+This dataset contains one row per customer with columns: `total_bill`, `tip`, `sex`, `smoker`, `day`, `time`, and `size`.
+
+**Two-step approach with pandas:**
+```python
+# Step 1: Group and calculate average
+bill_avg_df = tips_df.groupby("day")[["total_bill"]].mean()
+
+# Step 2: Plot
+plt.bar(bill_avg_df.index, bill_avg_df.total_bill)
+plt.show()
+```
+
+This works but is two steps, and you have to repeat both every time you want to change the grouping column.
+
+**Single-step approach with Seaborn:**
+```python
+sns.barplot(x='day', y='total_bill', data=tips_df)
+plt.show()
+```
+
+**Output:**
+
+![Seaborn Bar Plot](Graphs/Figure_19.png)
+
+`sns.barplot()` automatically groups by the x column and calculates the mean of the y column — the same result as the two-step pandas approach but in one line.
+
+**What is the line in the middle of each bar?**
+
+The vertical line (also called an **error bar** or **confidence interval**) shows the **variation** in the data for that group. A tall line means the individual values are spread far from the average — the average is less reliable. A short line means most values are close to the average — the average is a good representation of that group. It is not a min/max line; it represents the 95% confidence interval by default.
+
+### Adding Hue to Group Further
+
+Just like scatter plots, you can use `hue` to split each category by an additional grouping. For example, to see the average bill per day broken down by gender:
+
+```python
+sns.barplot(x='day', y='total_bill', hue='sex', data=tips_df)
+plt.show()
+```
+
+**Output:**
+
+![Bar Plot with Hue](Graphs/Figure_20.png)
+
+Now each day has two bars side by side — one per gender. You can swap `hue='sex'` for any other categorical column without changing anything else:
+
+```python
+# Break down by smoker instead
+sns.barplot(x='day', y='total_bill', hue='smoker', data=tips_df)
+```
+
+### Horizontal Bar Charts
+
+Switch to a horizontal bar chart by swapping `x` and `y`. This is especially useful when your category labels are long — like country names — since they fit better on the y-axis without overlapping:
+
+```python
+sns.barplot(y='day', x='total_bill', hue='smoker', data=tips_df)
+plt.show()
+```
+
+**Output:**
+
+![Horizontal Bar Chart](Graphs/Figure_21.png)
+
+### Quick Reference Table
+
+| Operation | Purpose | Example |
+|-----------|---------|---------|
+| `plt.bar(x, y)` | Basic bar chart | `plt.bar(years, yield_apples)` |
+| `plt.bar(x, y, bottom=vals)` | Stacked bar chart | `plt.bar(years, yield_oranges, bottom=yield_apples)` |
+| `sns.barplot(x, y, data)` | Auto-averaged bar chart | `sns.barplot(x='day', y='total_bill', data=tips_df)` |
+| `hue='col'` | Split bars by category | `hue='sex'` |
+| Swap `x` and `y` | Horizontal bar chart | `y='day', x='total_bill'` |
